@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import Search from '@/components/Search';
 import TermList from '@/components/TermList';
-import { useStaggeredAnimation } from '@/utils/animations';
+import Settings from '@/components/Settings';
 import { techTerms, filterTerms } from '@/utils/data';
 
 const GlossaryView = () => {
@@ -23,6 +23,8 @@ const GlossaryView = () => {
       <main className="flex-grow overflow-y-auto p-4">
         <TermList />
       </main>
+      
+      <Settings />
       
       <footer className="p-2 text-center text-xs text-gray-500 border-t">
         TechLingo Wiki © {new Date().getFullYear()}

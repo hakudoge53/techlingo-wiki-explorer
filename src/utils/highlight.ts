@@ -49,3 +49,10 @@ export const highlightKeywords = (text: string): string => {
 const escapeRegExp = (string: string): string => {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 };
+
+// Export this for potential reuse in other modules
+export const syncTermsToStorage = (): void => {
+  if (typeof chrome !== 'undefined' && chrome.storage) {
+    chrome.storage.local.set({ techTerms });
+  }
+};
