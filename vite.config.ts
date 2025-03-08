@@ -3,7 +3,6 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
-import { rollup } from 'rollup';
 import fs from 'fs';
 
 // https://vitejs.dev/config/
@@ -17,30 +16,23 @@ export default defineConfig(({ mode }) => ({
     mode === 'development' &&
     componentTagger(),
     {
-      name: 'build-content-script',
-      async writeBundle() {
-        // Only build content script in production mode
+      name: 'copy-content-script',
+      apply: 'build',
+      closeBundle() {
+        // Only process content script in production mode
         if (mode === 'production') {
           try {
-            // Bundle the content script using a more direct approach
-            // instead of importing the config file
-            const bundle = await rollup({
-              input: 'public/content.js',
-              output: {
-                file: 'dist/content.js',
-                format: 'iife'
-              }
-            });
+            // Create the dist directory if it doesn't exist
+            if (!fs.existsSync('dist')) {
+              fs.mkdirSync('dist');
+            }
             
-            await bundle.write({
-              file: 'dist/content.js',
-              format: 'iife'
-            });
-            
-            await bundle.close();
-            console.log('Content script bundled successfully!');
+            // Simple file copy approach instead of using Rollup
+            // Copy the pre-bundled content script to the dist folder
+            fs.copyFileSync('public/content.js', 'dist/content.js');
+            console.log('Content script copied successfully!');
           } catch (error) {
-            console.error('Error bundling content script:', error);
+            console.error('Error copying content script:', error);
           }
         }
       }
