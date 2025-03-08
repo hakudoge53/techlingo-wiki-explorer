@@ -4,6 +4,7 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 import { rollup } from 'rollup';
+import fs from 'fs';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -21,11 +22,21 @@ export default defineConfig(({ mode }) => ({
         // Only build content script in production mode
         if (mode === 'production') {
           try {
-            // Load the rollup config
-            const config = await import('./public/rollup.config.js');
-            // Bundle the content script
-            const bundle = await rollup(config.default);
-            await bundle.write(config.default.output);
+            // Bundle the content script using a more direct approach
+            // instead of importing the config file
+            const bundle = await rollup({
+              input: 'public/content.js',
+              output: {
+                file: 'dist/content.js',
+                format: 'iife'
+              }
+            });
+            
+            await bundle.write({
+              file: 'dist/content.js',
+              format: 'iife'
+            });
+            
             await bundle.close();
             console.log('Content script bundled successfully!');
           } catch (error) {
