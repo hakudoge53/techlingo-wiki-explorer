@@ -2,8 +2,9 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { type TechTerm } from '@/utils/data';
+import { type TechTerm, techTerms } from '@/utils/data';
 import { ChevronRightIcon } from 'lucide-react';
+import { highlightKeywords } from '@/utils/highlight';
 
 interface TermCardProps {
   term: TechTerm;
@@ -41,9 +42,10 @@ const TermCard = ({ term, index }: TermCardProps) => {
               {term.term}
             </h3>
             
-            <p className="text-muted-foreground text-sm flex-grow">
-              {term.description}
-            </p>
+            <p 
+              className="text-muted-foreground text-sm flex-grow"
+              dangerouslySetInnerHTML={{ __html: highlightKeywords(term.description) }}
+            />
             
             <div 
               className={`mt-4 text-sm font-medium text-primary flex items-center transition-all duration-300 ${isHovered ? 'opacity-100' : 'opacity-70'}`}
