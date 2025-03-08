@@ -52,7 +52,10 @@ const escapeRegExp = (string: string): string => {
 
 // Export this for potential reuse in other modules
 export const syncTermsToStorage = (): void => {
-  if (typeof chrome !== 'undefined' && chrome.storage) {
+  // Check if Chrome API is available before using it
+  if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
     chrome.storage.local.set({ techTerms });
+  } else {
+    console.log('Chrome API not available - running in development mode');
   }
 };

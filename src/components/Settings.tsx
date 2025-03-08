@@ -8,26 +8,35 @@ const Settings = () => {
 
   // Load saved preference on component mount
   useEffect(() => {
-    chrome.storage.sync.get(['highlightEnabled'], (result) => {
-      setHighlightEnabled(result.highlightEnabled || false);
-    });
+    // Check if Chrome API is available
+    if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.sync) {
+      chrome.storage.sync.get(['highlightEnabled'], (result) => {
+        setHighlightEnabled(result.highlightEnabled || false);
+      });
+    }
   }, []);
 
   // Save preference when checkbox is toggled
   const handleToggleHighlight = (checked: boolean) => {
     setHighlightEnabled(checked);
-    chrome.storage.sync.set({ highlightEnabled: checked });
     
-    // Send message to content script to update highlighting
-    if (chrome.tabs && chrome.tabs.query) {
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        if (tabs[0]?.id) {
-          chrome.tabs.sendMessage(tabs[0].id, { 
-            action: 'toggleHighlight', 
-            enabled: checked 
-          });
-        }
-      });
+    // Check if Chrome API is available
+    if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.sync) {
+      chrome.storage.sync.set({ highlightEnabled: checked });
+      
+      // Send message to content script to update highlighting
+      if (chrome.tabs && chrome.tabs.query) {
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+          if (tabs[0]?.id) {
+            chrome.tabs.sendMessage(tabs[0].id, { 
+              action: 'toggleHighlight', 
+              enabled: checked 
+            });
+          }
+        });
+      }
+    } else {
+      console.log('Chrome API not available - running in development mode');
     }
   };
 
