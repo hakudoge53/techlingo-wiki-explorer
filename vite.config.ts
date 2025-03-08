@@ -4,6 +4,7 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 import fs from 'fs';
+import type { Plugin, UserConfig } from "vite";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -17,8 +18,7 @@ export default defineConfig(({ mode }) => ({
     componentTagger(),
     {
       name: 'copy-content-script',
-      // Fix: 'apply' must be either 'build' or 'serve' as a literal value, not a string
-      apply: 'build', // This is now a literal, not a string type
+      apply: 'build', // Using the literal value 'build'
       closeBundle() {
         // Only process content script in production mode
         if (mode === 'production') {
@@ -37,7 +37,7 @@ export default defineConfig(({ mode }) => ({
           }
         }
       }
-    }
+    } as Plugin
   ].filter(Boolean),
   resolve: {
     alias: {
