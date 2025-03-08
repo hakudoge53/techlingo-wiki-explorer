@@ -17,7 +17,8 @@ export default defineConfig(({ mode }) => ({
     componentTagger(),
     {
       name: 'copy-content-script',
-      apply: 'build',
+      // Fix: 'apply' must be either 'build' or 'serve' as a literal value, not a string
+      apply: 'build', // This is now a literal, not a string type
       closeBundle() {
         // Only process content script in production mode
         if (mode === 'production') {
