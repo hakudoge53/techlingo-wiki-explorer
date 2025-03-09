@@ -1,0 +1,33 @@
+
+name: GitHub Devcontainer Setup
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  verify-devcontainer:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Validate devcontainer.json
+        uses: devcontainers/validate@v1
+        with:
+          path: ./.devcontainer/devcontainer.json
+          
+      - name: Build and verify devcontainer
+        uses: devcontainers/ci@v0.3
+        with:
+          imageName: techlingo-wiki-extension
+          cacheFrom: ghcr.io/${{ github.repository_owner }}/techlingo-wiki-extension:latest
+          push: never
+          subFolder: .devcontainer
+          runCmd: |
+            node -v
+            npm -v
+            echo "Devcontainer verification successful!"
