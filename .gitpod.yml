@@ -33,6 +33,9 @@ tasks:
       echo "   - Enter the host and port from above"
       echo "   - Paste your SSH key when prompted"
       echo ""
+      echo "4. Verify SSH connection is working:"
+      echo "   ssh -T gitpod@$(gp url 22 | sed 's/https:\/\///')"
+      echo ""
       echo "====================================="
 
 ports:
@@ -42,6 +45,9 @@ ports:
   - port: 22
     visibility: public
     onOpen: ignore
+  - port: 3000
+    onOpen: ignore
+    visibility: public
 
 vscode:
   extensions:
