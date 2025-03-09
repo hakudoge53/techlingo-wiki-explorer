@@ -7,6 +7,27 @@ tasks:
   - name: Extension building
     command: echo "Run 'npm run build && cd dist && zip -r ../techlingo-wiki-extension.zip *' to build and package extension"
 
+  - name: SSH Setup
+    command: |
+      # Generate SSH key if it doesn't exist
+      if [ ! -f ~/.ssh/id_ed25519 ]; then
+        mkdir -p ~/.ssh
+        ssh-keygen -t ed25519 -C "gitpod-cursor-connection" -f ~/.ssh/id_ed25519 -N ""
+        chmod 600 ~/.ssh/id_ed25519
+      fi
+      
+      # Display connection information
+      echo ""
+      echo "=== SSH SETUP FOR CURSOR ==="
+      echo "Public key (add this to Gitpod SSH keys):"
+      cat ~/.ssh/id_ed25519.pub
+      echo ""
+      echo "Connection details:"
+      gp ssh-info
+      echo ""
+      echo "To connect with Cursor, use the host and port from above."
+      echo "================"
+
 ports:
   - port: 8080
     onOpen: open-browser
