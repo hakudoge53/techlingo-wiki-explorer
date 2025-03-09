@@ -1,30 +1,30 @@
 
-/**
- * DOM observer to detect and highlight new content
- */
+// DOM Observation functionality
 
-import { highlightTermsOnPage } from './main.js';
+let processNode;
 
-// Create and start the mutation observer
-function setupObserver(highlightEnabled) {
+// Set up observer for dynamic content
+function setupMutationObserver(highlightEnabled, processNodeFunc) {
+  processNode = processNodeFunc;
+  
   const observer = new MutationObserver((mutations) => {
     if (highlightEnabled) {
-      mutations.forEach(mutation => {
+      for (const mutation of mutations) {
         if (mutation.type === 'childList') {
           mutation.addedNodes.forEach(node => {
             if (node.nodeType === 1) { // Element node
-              highlightTermsOnPage();
+              processNode(node);
             }
           });
         }
-      });
+      }
     }
   });
-
-  // Start observing the document with the configured parameters
+  
+  // Start observing
   observer.observe(document.body, { childList: true, subtree: true });
   
   return observer;
 }
 
-export { setupObserver };
+export { setupMutationObserver };

@@ -17,13 +17,18 @@ export default defineConfig(({ mode }) => ({
     mode === 'development' &&
     componentTagger(),
     {
-      name: 'copy-content-script',
+      name: 'copy-content-scripts',
       apply: 'build',
       closeBundle() {
         try {
           // Create the dist directory if it doesn't exist
           if (!fs.existsSync('dist')) {
             fs.mkdirSync('dist');
+          }
+          
+          // Create the content directory if it doesn't exist
+          if (!fs.existsSync('dist/content')) {
+            fs.mkdirSync('dist/content');
           }
           
           // Copy content.js directly without any transformation
@@ -33,8 +38,24 @@ export default defineConfig(({ mode }) => ({
           } else {
             console.error('content.js file not found in public directory');
           }
+          
+          // Copy individual content script modules
+          const contentDir = 'public/content';
+          if (fs.existsSync(contentDir)) {
+            const files = fs.readdirSync(contentDir);
+            files.forEach(file => {
+              const sourcePath = path.join(contentDir, file);
+              const destPath = path.join('dist/content', file);
+              if (fs.statSync(sourcePath).isFile()) {
+                fs.copyFileSync(sourcePath, destPath);
+                console.log(`Content script module ${file} copied successfully!`);
+              }
+            });
+          } else {
+            console.error('content directory not found in public directory');
+          }
         } catch (error) {
-          console.error('Error copying content script:', error);
+          console.error('Error copying content scripts:', error);
         }
       }
     } as Plugin
