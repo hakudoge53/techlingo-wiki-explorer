@@ -10,9 +10,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 interface TermCardProps {
   term: TechTerm;
   index: number;
+  onClick?: () => void;
 }
 
-const TermCard = ({ term, index }: TermCardProps) => {
+const TermCard = ({ term, index, onClick }: TermCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   
@@ -41,6 +42,7 @@ const TermCard = ({ term, index }: TermCardProps) => {
       <Link 
         to={`/term/${term.id}`}
         className="block h-full group"
+        onClick={onClick}
       >
         <div className="h-full p-6 rounded-xl bg-card border border-border/50 hover:border-border transition-all duration-300 shadow-soft hover:shadow-medium">
           <div className="flex flex-col h-full">
