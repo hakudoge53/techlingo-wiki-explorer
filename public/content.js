@@ -1,4 +1,3 @@
-
 // TechLingo Wiki content script
 
 // Keep track of our state
