@@ -1,6 +1,6 @@
+
 // This file serves as the entry point for the content script
 
-// TechLingo Wiki content script
 (function() {
   // Keep track of our state
   let highlightEnabled = false;
