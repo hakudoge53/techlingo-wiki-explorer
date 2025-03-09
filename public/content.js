@@ -1,3 +1,4 @@
+
 // TechLingo Wiki content script
 
 // Keep track of our state
@@ -38,6 +39,7 @@ function createHighlightStyles() {
         font-weight: 500;
         padding: 0 2px;
         border-radius: 2px;
+        cursor: help;
       }
     `;
     document.head.appendChild(style);
@@ -112,6 +114,7 @@ async function highlightTerms() {
             // Add highlighted match
             const span = document.createElement('span');
             span.className = 'techlingo-wiki-highlight';
+            span.setAttribute('title', term.description || '');
             span.textContent = match[0];
             fragment.appendChild(span);
             
@@ -167,9 +170,12 @@ function removeHighlights() {
 
 // Initialize the content script
 function init() {
+  console.log('TechLingo Wiki content script initialized');
+  
   // Load user preference
   chrome.storage.sync.get(['highlightEnabled'], (result) => {
     highlightEnabled = result.highlightEnabled || false;
+    console.log('Highlight enabled:', highlightEnabled);
     
     // Apply highlighting if enabled
     if (highlightEnabled) {
@@ -179,6 +185,8 @@ function init() {
   
   // Listen for messages from popup
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    console.log('Message received:', message);
+    
     if (message.action === 'toggleHighlight') {
       highlightEnabled = message.enabled;
       

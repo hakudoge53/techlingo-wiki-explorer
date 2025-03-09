@@ -20,20 +20,21 @@ export default defineConfig(({ mode }) => ({
       name: 'copy-content-script',
       apply: 'build',
       closeBundle() {
-        // Only process content script in production mode
-        if (mode === 'production') {
-          try {
-            // Create the dist directory if it doesn't exist
-            if (!fs.existsSync('dist')) {
-              fs.mkdirSync('dist');
-            }
-            
-            // Copy content.js directly without any transformation
+        try {
+          // Create the dist directory if it doesn't exist
+          if (!fs.existsSync('dist')) {
+            fs.mkdirSync('dist');
+          }
+          
+          // Copy content.js directly without any transformation
+          if (fs.existsSync('public/content.js')) {
             fs.copyFileSync('public/content.js', 'dist/content.js');
             console.log('Content script copied successfully!');
-          } catch (error) {
-            console.error('Error copying content script:', error);
+          } else {
+            console.error('content.js file not found in public directory');
           }
+        } catch (error) {
+          console.error('Error copying content script:', error);
         }
       }
     } as Plugin
