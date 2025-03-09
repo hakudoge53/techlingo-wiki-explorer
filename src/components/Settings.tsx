@@ -36,14 +36,23 @@ const Settings = () => {
               tabs[0].id, 
               { action: 'toggleHighlight', enabled: checked },
               (response) => {
-                // Check if there was an error sending the message
-                const error = chrome.runtime.lastError;
-                if (error) {
-                  console.error('Error sending message:', error);
-                  toast.error("Failed to update highlighting. Try refreshing the page.");
-                } else if (response?.success) {
-                  console.log('Highlighting updated successfully');
-                  toast.success(checked ? "Terms will be highlighted on pages" : "Highlighting disabled");
+                // Check for error using try-catch since lastError may not be defined in types
+                try {
+                  // TypeScript-safe way to check for messaging errors
+                  const error = chrome.runtime && 'lastError' in chrome.runtime 
+                    ? (chrome.runtime as any).lastError 
+                    : null;
+                  
+                  if (error) {
+                    console.error('Error sending message:', error);
+                    toast.error("Failed to update highlighting. Try refreshing the page.");
+                  } else if (response?.success) {
+                    console.log('Highlighting updated successfully');
+                    toast.success(checked ? "Terms will be highlighted on pages" : "Highlighting disabled");
+                  }
+                } catch (err) {
+                  console.error('Error in message callback:', err);
+                  toast.error("An unexpected error occurred");
                 }
               }
             );

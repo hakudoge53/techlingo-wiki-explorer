@@ -54,21 +54,25 @@ const escapeRegExp = (string: string): string => {
 export const syncTermsToStorage = (): void => {
   // Check if Chrome API is available before using it
   if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
-    // We need to send all necessary data for each term
-    const termsForContentScript = techTerms.map(term => ({
-      term: term.term,
-      description: term.description,
-      category: term.category
-    }));
-    
-    chrome.storage.local.set({ techTerms: termsForContentScript }, () => {
-      console.log('Tech terms synced to storage for content script', termsForContentScript.length);
+    try {
+      // We need to send all necessary data for each term
+      const termsForContentScript = techTerms.map(term => ({
+        term: term.term,
+        description: term.description,
+        category: term.category
+      }));
       
-      // Debug: Verify we can retrieve the terms
-      chrome.storage.local.get(['techTerms'], (result) => {
-        console.log(`Retrieved ${result.techTerms?.length || 0} terms from storage`);
+      chrome.storage.local.set({ techTerms: termsForContentScript }, () => {
+        console.log('Tech terms synced to storage for content script', termsForContentScript.length);
+        
+        // Debug: Verify we can retrieve the terms
+        chrome.storage.local.get(['techTerms'], (result) => {
+          console.log(`Retrieved ${result.techTerms?.length || 0} terms from storage`);
+        });
       });
-    });
+    } catch (error) {
+      console.error('Error syncing terms to storage:', error);
+    }
   } else {
     console.log('Chrome API not available - running in development mode');
   }
