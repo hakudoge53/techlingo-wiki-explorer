@@ -9,6 +9,15 @@ import { techTerms } from './data';
 export const highlightKeywords = (text: string): string => {
   if (!text) return '';
   
+  // Create a cache for the highlight operation
+  const cache = new Map<string, string>();
+  const cacheKey = text.substring(0, 50); // Use part of the text as a key
+  
+  // Check if we have already processed this text
+  if (cache.has(cacheKey)) {
+    return cache.get(cacheKey) || '';
+  }
+  
   // Sort terms by length (descending) to prioritize longer terms
   // This prevents partial matches within longer terms
   const sortedTerms = [...techTerms].sort((a, b) => 
@@ -39,6 +48,9 @@ export const highlightKeywords = (text: string): string => {
     // Mark as processed
     processedTerms.add(term.toLowerCase());
   }
+  
+  // Cache the result for future use
+  cache.set(cacheKey, processedText);
   
   return processedText;
 };

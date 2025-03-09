@@ -3,9 +3,12 @@ import { useEffect, useState } from 'react';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { toast } from "sonner";
+import { Loader2 } from 'lucide-react';
 
 const Settings = () => {
   const [highlightEnabled, setHighlightEnabled] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   // Load saved preference on component mount
   useEffect(() => {
@@ -14,13 +17,18 @@ const Settings = () => {
       chrome.storage.sync.get(['highlightEnabled'], (result) => {
         setHighlightEnabled(result.highlightEnabled || false);
         console.log('Loaded highlight setting:', result.highlightEnabled);
+        setIsLoading(false);
       });
+    } else {
+      // For development mode
+      setIsLoading(false);
     }
   }, []);
 
   // Save preference when checkbox is toggled
   const handleToggleHighlight = (checked: boolean) => {
     setHighlightEnabled(checked);
+    setIsUpdating(true);
     
     // Check if Chrome API is available
     if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.sync) {
@@ -38,6 +46,7 @@ const Settings = () => {
               (response) => {
                 // Check for error using runtime.lastError
                 const error = chrome.runtime?.lastError;
+                setIsUpdating(false);
                 
                 if (error) {
                   console.error('Error sending message:', error);
@@ -50,15 +59,20 @@ const Settings = () => {
             );
           } else {
             console.log('No active tab found');
+            setIsUpdating(false);
             toast.warning("No active tab found. Try again on a webpage.");
           }
         });
       } else {
         console.log('Chrome API for tabs not available');
+        setIsUpdating(false);
       }
     } else {
       console.log('Chrome API not available - running in development mode');
-      toast.info('Running in development mode - highlighting simulated');
+      setTimeout(() => {
+        setIsUpdating(false);
+        toast.info('Running in development mode - highlighting simulated');
+      }, 800);
     }
   };
 
@@ -73,11 +87,23 @@ const Settings = () => {
             Automatically highlight tech terms while browsing web pages
           </p>
         </div>
-        <Switch 
-          id="highlight-switch"
-          checked={highlightEnabled}
-          onCheckedChange={handleToggleHighlight}
-        />
+        {isLoading ? (
+          <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+        ) : (
+          <div className="relative">
+            <Switch 
+              id="highlight-switch"
+              checked={highlightEnabled}
+              onCheckedChange={handleToggleHighlight}
+              disabled={isUpdating}
+            />
+            {isUpdating && (
+              <span className="absolute -top-1 -right-1">
+                <Loader2 className="h-3 w-3 animate-spin text-primary" />
+              </span>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

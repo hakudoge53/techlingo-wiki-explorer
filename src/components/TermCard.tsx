@@ -1,10 +1,11 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { type TechTerm, techTerms } from '@/utils/data';
+import { type TechTerm } from '@/utils/data';
 import { ChevronRightIcon } from 'lucide-react';
 import { highlightKeywords } from '@/utils/highlight';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface TermCardProps {
   term: TechTerm;
@@ -13,13 +14,27 @@ interface TermCardProps {
 
 const TermCard = ({ term, index }: TermCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+  
+  // Simulate content loading for better visual feedback
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoaded(true);
+    }, 100 + index * 50); // Stagger loading for visual effect
+    
+    return () => clearTimeout(timer);
+  }, [index]);
+  
+  if (!isLoaded) {
+    return <TermCardSkeleton />;
+  }
   
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
-      whileHover={{ y: -4 }}
+      transition={{ duration: 0.4, delay: index * 0.05, ease: "easeOut" }}
+      whileHover={{ y: -4, transition: { duration: 0.2 } }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -58,5 +73,22 @@ const TermCard = ({ term, index }: TermCardProps) => {
     </motion.div>
   );
 };
+
+const TermCardSkeleton = () => (
+  <div className="h-full p-6 rounded-xl bg-card border border-border/20 shadow-soft">
+    <div className="flex flex-col h-full">
+      <div className="flex items-start justify-between mb-4">
+        <Skeleton className="h-6 w-24 rounded-full" />
+      </div>
+      <Skeleton className="h-7 w-3/4 mb-4" />
+      <Skeleton className="h-4 w-full mb-2" />
+      <Skeleton className="h-4 w-5/6 mb-2" />
+      <Skeleton className="h-4 w-4/5 mb-2" />
+      <div className="mt-auto pt-4">
+        <Skeleton className="h-4 w-20" />
+      </div>
+    </div>
+  </div>
+);
 
 export default TermCard;
