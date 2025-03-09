@@ -1,6 +1,4 @@
-
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { type TechTerm } from '@/utils/data';
 import { ChevronRightIcon } from 'lucide-react';
@@ -17,11 +15,10 @@ const TermCard = ({ term, index, onClick }: TermCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   
-  // Simulate content loading for better visual feedback
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoaded(true);
-    }, 100 + index * 50); // Stagger loading for visual effect
+    }, 100 + index * 50);
     
     return () => clearTimeout(timer);
   }, [index]);
@@ -39,9 +36,8 @@ const TermCard = ({ term, index, onClick }: TermCardProps) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <Link 
-        to={`/term/${term.id}`}
-        className="block h-full group"
+      <button 
+        className="block w-full h-full text-left group"
         onClick={onClick}
       >
         <div className="h-full p-6 rounded-xl bg-card border border-border/50 hover:border-border transition-all duration-300 shadow-soft hover:shadow-medium">
@@ -71,7 +67,7 @@ const TermCard = ({ term, index, onClick }: TermCardProps) => {
             </div>
           </div>
         </div>
-      </Link>
+      </button>
     </motion.div>
   );
 };
