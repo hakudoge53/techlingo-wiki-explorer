@@ -7,6 +7,7 @@ import { techTerms } from '@/utils/data';
 
 const GlossaryView = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedTerm, setSelectedTerm] = useState<string | null>(null);
   
   return (
     <div className="flex flex-col w-full h-full bg-background overflow-hidden">
@@ -16,7 +17,7 @@ const GlossaryView = () => {
       </header>
       
       <main className="flex-grow overflow-y-auto p-4 scrollbar-thin scrollbar-thumb-secondary scrollbar-track-transparent">
-        <TermList />
+        <TermList searchQuery={searchQuery} onSelectTerm={setSelectedTerm} />
       </main>
       
       <Settings />

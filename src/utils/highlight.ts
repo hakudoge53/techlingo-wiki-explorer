@@ -64,7 +64,7 @@ const escapeRegExp = (string: string): string => {
 
 // Export this for potential reuse in other modules
 export const syncTermsToStorage = (): void => {
-  // Check if Chrome API is available before using it
+  // Only run in browser extension context
   if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
     try {
       // We need to send all necessary data for each term
@@ -76,11 +76,6 @@ export const syncTermsToStorage = (): void => {
       
       chrome.storage.local.set({ techTerms: termsForContentScript }, () => {
         console.log('Tech terms synced to storage for content script', termsForContentScript.length);
-        
-        // Debug: Verify we can retrieve the terms
-        chrome.storage.local.get(['techTerms'], (result) => {
-          console.log(`Retrieved ${result.techTerms?.length || 0} terms from storage`);
-        });
       });
     } catch (error) {
       console.error('Error syncing terms to storage:', error);
@@ -90,6 +85,7 @@ export const syncTermsToStorage = (): void => {
   }
 };
 
-// Call this function when the app initializes to make terms available to content script
-// We do this here because this module is imported early in the app lifecycle
-syncTermsToStorage();
+// Initialize storage only if we're in a browser extension context
+if (typeof chrome !== 'undefined' && chrome.storage) {
+  syncTermsToStorage();
+}
