@@ -1,3 +1,4 @@
+
 /**
  * Main content script for TechLingo Wiki extension
  */
@@ -40,7 +41,7 @@ async function highlightTerms() {
     };
     
     // Process text nodes
-    processNode = function(node) {
+    const processNode = function(node) {
       // Skip if already processed
       if (processedNodes.has(node)) return;
       

@@ -1,17 +1,55 @@
-
 // This file serves as the entry point for the content script
 
 (function() {
-  // Keep track of our state
+  console.log('TechLingo Wiki content script initializing...');
+  
+  // State for the extension
   let highlightEnabled = false;
+  
+  // Initialize the content script
+  function init() {
+    console.log('TechLingo Wiki content script initialized');
+    
+    // Load user preference
+    chrome.storage.sync.get(['highlightEnabled'], (result) => {
+      highlightEnabled = result.highlightEnabled || false;
+      console.log('Highlight enabled:', highlightEnabled);
+      
+      // Apply highlighting if enabled
+      if (highlightEnabled) {
+        highlightTerms();
+      }
+    });
+    
+    // Listen for messages from popup
+    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+      console.log('Message received:', message);
+      
+      if (message.action === 'toggleHighlight') {
+        highlightEnabled = message.enabled;
+        
+        if (highlightEnabled) {
+          highlightTerms();
+        } else {
+          removeHighlights();
+        }
+        
+        sendResponse({ success: true });
+      }
+      return true;
+    });
+  }
+  
+  // Keep track of processed nodes
   let processedNodes = new WeakSet();
-
-  // Escape special regex characters
+  
+  // Import functionality from modular files
+  
+  // Highlight functions
   function escapeRegExp(string) {
     return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   }
-
-  // Create styles for highlighting
+  
   function createHighlightStyles() {
     if (!document.getElementById('techlingo-wiki-styles')) {
       const style = document.createElement('style');
@@ -48,8 +86,28 @@
       document.head.appendChild(style);
     }
   }
-
-  // Get terms from storage
+  
+  function removeHighlights() {
+    // Remove the highlight styles
+    const style = document.getElementById('techlingo-wiki-styles');
+    if (style) {
+      style.remove();
+    }
+    
+    // Remove all highlighted spans
+    const highlights = document.querySelectorAll('.techlingo-wiki-highlight');
+    for (const highlight of highlights) {
+      if (highlight.parentNode) {
+        const text = document.createTextNode(highlight.textContent);
+        highlight.parentNode.replaceChild(text, highlight);
+      }
+    }
+    
+    // Reset processed nodes
+    processedNodes = new WeakSet();
+  }
+  
+  // Terms management
   function getTermsFromStorage() {
     return new Promise((resolve) => {
       if (chrome.storage && chrome.storage.local) {
@@ -65,8 +123,83 @@
       }
     });
   }
-
-  // Highlight terms in text
+  
+  // DOM processing and highlighting
+  function processNode(node, skipTags, sortedTerms) {
+    // Skip if already processed
+    if (processedNodes.has(node)) return;
+    
+    // Process element node and its children
+    if (node.nodeType === 1) { // Element node
+      // Skip certain elements
+      if (skipTags[node.nodeName]) return;
+      
+      // Mark as processed
+      processedNodes.add(node);
+      
+      // Process children
+      for (const child of Array.from(node.childNodes)) {
+        processNode(child, skipTags, sortedTerms);
+      }
+    } 
+    // Process text node
+    else if (node.nodeType === 3 && node.textContent.trim().length > 0) { // Text node with content
+      const text = node.textContent;
+      
+      // Check for term matches
+      let found = false;
+      for (const term of sortedTerms) {
+        const regex = new RegExp(`\\b(${escapeRegExp(term.term)})\\b`, 'gi');
+        
+        if (regex.test(text)) {
+          found = true;
+          
+          // Replace the node with highlighted version
+          const fragment = document.createDocumentFragment();
+          let lastIndex = 0;
+          let match;
+          
+          regex.lastIndex = 0; // Reset regex
+          while ((match = regex.exec(text)) !== null) {
+            // Add text before match
+            if (match.index > lastIndex) {
+              fragment.appendChild(document.createTextNode(text.substring(lastIndex, match.index)));
+            }
+            
+            // Add highlighted match
+            const span = document.createElement('span');
+            span.className = 'techlingo-wiki-highlight';
+            span.setAttribute('data-description', term.description || '');
+            span.setAttribute('title', term.description || '');
+            span.textContent = match[0];
+            fragment.appendChild(span);
+            
+            lastIndex = regex.lastIndex;
+          }
+          
+          // Add text after the last match
+          if (lastIndex < text.length) {
+            fragment.appendChild(document.createTextNode(text.substring(lastIndex)));
+          }
+          
+          // Replace the original node with our fragment
+          if (node.parentNode) {
+            node.parentNode.replaceChild(fragment, node);
+            processedNodes.add(fragment);
+          }
+          
+          break; // Stop after finding the first match
+        }
+      }
+      
+      // Mark as processed
+      if (!found) {
+        processedNodes.add(node);
+      }
+    }
+  }
+  
+  // Main highlight function
   async function highlightTerms() {
     try {
       // Don't do anything if highlighting is disabled
@@ -95,83 +228,8 @@
         'CODE': true, 'PRE': true
       };
       
-      // Process text nodes
-      function processNode(node) {
-        // Skip if already processed
-        if (processedNodes.has(node)) return;
-        
-        // Process element node and its children
-        if (node.nodeType === 1) { // Element node
-          // Skip certain elements
-          if (skipTags[node.nodeName]) return;
-          
-          // Mark as processed
-          processedNodes.add(node);
-          
-          // Process children
-          for (const child of Array.from(node.childNodes)) {
-            processNode(child);
-          }
-        } 
-        // Process text node
-        else if (node.nodeType === 3 && node.textContent.trim().length > 0) { // Text node with content
-          const text = node.textContent;
-          
-          // Check for term matches
-          let found = false;
-          for (const term of sortedTerms) {
-            const regex = new RegExp(`\\b(${escapeRegExp(term.term)})\\b`, 'gi');
-            
-            if (regex.test(text)) {
-              found = true;
-              
-              // Replace the node with highlighted version
-              const fragment = document.createDocumentFragment();
-              let lastIndex = 0;
-              let match;
-              
-              regex.lastIndex = 0; // Reset regex
-              while ((match = regex.exec(text)) !== null) {
-                // Add text before match
-                if (match.index > lastIndex) {
-                  fragment.appendChild(document.createTextNode(text.substring(lastIndex, match.index)));
-                }
-                
-                // Add highlighted match
-                const span = document.createElement('span');
-                span.className = 'techlingo-wiki-highlight';
-                span.setAttribute('data-description', term.description || '');
-                span.setAttribute('title', term.description || '');
-                span.textContent = match[0];
-                fragment.appendChild(span);
-                
-                lastIndex = regex.lastIndex;
-              }
-              
-              // Add text after the last match
-              if (lastIndex < text.length) {
-                fragment.appendChild(document.createTextNode(text.substring(lastIndex)));
-              }
-              
-              // Replace the original node with our fragment
-              if (node.parentNode) {
-                node.parentNode.replaceChild(fragment, node);
-                processedNodes.add(fragment);
-              }
-              
-              break; // Stop after finding the first match
-            }
-          }
-          
-          // Mark as processed
-          if (!found) {
-            processedNodes.add(node);
-          }
-        }
-      }
-      
       // Start processing from body
-      processNode(document.body);
+      processNode(document.body, skipTags, sortedTerms);
       
       // Set up observer for dynamic content
       const observer = new MutationObserver((mutations) => {
@@ -180,7 +238,7 @@
             if (mutation.type === 'childList') {
               mutation.addedNodes.forEach(node => {
                 if (node.nodeType === 1) { // Element node
-                  processNode(node);
+                  processNode(node, skipTags, sortedTerms);
                 }
               });
             }
@@ -194,62 +252,7 @@
       console.error('Error highlighting terms:', error);
     }
   }
-
-  // Remove all highlights
-  function removeHighlights() {
-    // Remove the highlight styles
-    const style = document.getElementById('techlingo-wiki-styles');
-    if (style) {
-      style.remove();
-    }
-    
-    // Remove all highlighted spans
-    const highlights = document.querySelectorAll('.techlingo-wiki-highlight');
-    for (const highlight of highlights) {
-      if (highlight.parentNode) {
-        const text = document.createTextNode(highlight.textContent);
-        highlight.parentNode.replaceChild(text, highlight);
-      }
-    }
-    
-    // Reset processed nodes
-    processedNodes = new WeakSet();
-  }
-
-  // Initialize the content script
-  function init() {
-    console.log('TechLingo Wiki content script initialized');
-    
-    // Load user preference
-    chrome.storage.sync.get(['highlightEnabled'], (result) => {
-      highlightEnabled = result.highlightEnabled || false;
-      console.log('Highlight enabled:', highlightEnabled);
-      
-      // Apply highlighting if enabled
-      if (highlightEnabled) {
-        highlightTerms();
-      }
-    });
-    
-    // Listen for messages from popup
-    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-      console.log('Message received:', message);
-      
-      if (message.action === 'toggleHighlight') {
-        highlightEnabled = message.enabled;
-        
-        if (highlightEnabled) {
-          highlightTerms();
-        } else {
-          removeHighlights();
-        }
-        
-        sendResponse({ success: true });
-      }
-      return true;
-    });
-  }
-
+  
   // Run when page is loaded
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);

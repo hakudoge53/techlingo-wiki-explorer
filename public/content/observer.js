@@ -1,12 +1,13 @@
 
 // DOM Observation functionality
 
-let processNode;
-
-// Set up observer for dynamic content
-function setupMutationObserver(highlightEnabled, processNodeFunc) {
-  processNode = processNodeFunc;
-  
+/**
+ * Set up observer for dynamic content
+ * @param {boolean} highlightEnabled - Whether highlighting is enabled
+ * @param {Function} processNode - The node processing function
+ * @returns {MutationObserver} The mutation observer
+ */
+export function setupMutationObserver(highlightEnabled, processNode) {
   const observer = new MutationObserver((mutations) => {
     if (highlightEnabled) {
       for (const mutation of mutations) {
@@ -26,5 +27,3 @@ function setupMutationObserver(highlightEnabled, processNodeFunc) {
   
   return observer;
 }
-
-export { setupMutationObserver };

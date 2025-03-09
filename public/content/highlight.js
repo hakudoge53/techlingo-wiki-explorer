@@ -1,13 +1,17 @@
 
-// Highlighting related functionality
+// Highlight functionality for TechLingo Wiki
 
-// Escape special regex characters
-function escapeRegExp(string) {
+/**
+ * Escapes special characters in a string for use in a RegExp
+ */
+export function escapeRegExp(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-// Create styles for highlighting
-function createHighlightStyles() {
+/**
+ * Creates the styles required for highlighting terms
+ */
+export function createHighlightStyles() {
   if (!document.getElementById('techlingo-wiki-styles')) {
     const style = document.createElement('style');
     style.id = 'techlingo-wiki-styles';
@@ -44,8 +48,10 @@ function createHighlightStyles() {
   }
 }
 
-// Remove all highlights
-function removeHighlights() {
+/**
+ * Removes all highlights from the page
+ */
+export function removeHighlights() {
   // Remove the highlight styles
   const style = document.getElementById('techlingo-wiki-styles');
   if (style) {
@@ -61,5 +67,3 @@ function removeHighlights() {
     }
   }
 }
-
-export { escapeRegExp, createHighlightStyles, removeHighlights };
