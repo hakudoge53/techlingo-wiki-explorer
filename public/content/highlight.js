@@ -1,78 +1,157 @@
 
-// Highlight functionality for TechLingo Wiki
+// Term highlighting functionality
 
 (function() {
-  /**
-   * Escapes special characters in a string for use in a RegExp
-   */
-  function escapeRegExp(string) {
-    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  }
+  // Create namespace for our extension if it doesn't exist
+  window.techLingo = window.techLingo || {};
+  
+  // CSS for highlighted terms
+  const HIGHLIGHT_CLASS = 'techlingo-highlighted-term';
+  const HIGHLIGHT_STYLE = `
+    .${HIGHLIGHT_CLASS} {
+      background-color: rgba(59, 130, 246, 0.1);
+      color: rgb(59, 130, 246);
+      border-radius: 0.25rem;
+      padding: 0.125rem 0.25rem;
+      font-weight: 500;
+      cursor: help;
+      position: relative;
+      text-decoration: none !important;
+    }
+    .${HIGHLIGHT_CLASS}:hover {
+      background-color: rgba(59, 130, 246, 0.2);
+    }
+  `;
 
-  /**
-   * Creates the styles required for highlighting terms
-   */
-  function createHighlightStyles() {
-    if (!document.getElementById('techlingo-wiki-styles')) {
+  // Add style to the page
+  function addHighlightStyles() {
+    if (!document.getElementById('techlingo-styles')) {
       const style = document.createElement('style');
-      style.id = 'techlingo-wiki-styles';
-      style.textContent = `
-        .techlingo-wiki-highlight {
-          background-color: rgba(79, 70, 229, 0.1);
-          color: rgb(79, 70, 229);
-          font-weight: 500;
-          padding: 0 2px;
-          border-radius: 2px;
-          cursor: help;
-          position: relative;
-        }
-        
-        .techlingo-wiki-highlight:hover::after {
-          content: attr(data-description);
-          position: absolute;
-          bottom: 100%;
-          left: 50%;
-          transform: translateX(-50%);
-          background-color: rgba(0, 0, 0, 0.8);
-          color: white;
-          padding: 5px 10px;
-          border-radius: 4px;
-          font-size: 12px;
-          white-space: nowrap;
-          z-index: 10000;
-          max-width: 300px;
-          overflow: hidden;
-          text-overflow: ellipsis;
-        }
-      `;
+      style.id = 'techlingo-styles';
+      style.textContent = HIGHLIGHT_STYLE;
       document.head.appendChild(style);
     }
   }
 
-  /**
-   * Removes all highlights from the page
-   */
-  function removeHighlights() {
-    // Remove the highlight styles
-    const style = document.getElementById('techlingo-wiki-styles');
+  // Remove styles from the page
+  function removeHighlightStyles() {
+    const style = document.getElementById('techlingo-styles');
     if (style) {
       style.remove();
     }
+  }
+
+  // Create regular expressions for term matching
+  function createTermRegex(term) {
+    // Escape special regex characters and create a word boundary match
+    const escapedTerm = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return new RegExp(`\\b(${escapedTerm})\\b`, 'gi');
+  }
+
+  // Highlight terms in text nodes
+  function highlightTermsInTextNode(textNode, terms) {
+    if (!textNode || !textNode.nodeValue || !terms || terms.length === 0) {
+      return;
+    }
+
+    const parent = textNode.parentNode;
     
-    // Remove all highlighted spans
-    const highlights = document.querySelectorAll('.techlingo-wiki-highlight');
-    for (const highlight of highlights) {
-      if (highlight.parentNode) {
-        const text = document.createTextNode(highlight.textContent);
-        highlight.parentNode.replaceChild(text, highlight);
+    // Skip if parent is a script, style, or already highlighted
+    if (!parent || 
+        parent.tagName === 'SCRIPT' || 
+        parent.tagName === 'STYLE' || 
+        parent.tagName === 'TEXTAREA' || 
+        parent.tagName === 'INPUT' ||
+        parent.classList?.contains(HIGHLIGHT_CLASS)) {
+      return;
+    }
+
+    let text = textNode.nodeValue;
+    let matches = false;
+    let resultHTML = text;
+
+    // Process each term
+    for (const termObj of terms) {
+      const term = termObj.term;
+      const regex = createTermRegex(term);
+      
+      // Only replace if we have matches
+      if (regex.test(resultHTML)) {
+        matches = true;
+        resultHTML = resultHTML.replace(regex, (match) => {
+          return `<span class="${HIGHLIGHT_CLASS}" title="${termObj.description.replace(/"/g, '&quot;')}">${match}</span>`;
+        });
       }
+    }
+
+    // If we have matches, replace the text node with the HTML
+    if (matches) {
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = resultHTML;
+      
+      const fragment = document.createDocumentFragment();
+      while (tempDiv.firstChild) {
+        fragment.appendChild(tempDiv.firstChild);
+      }
+      
+      parent.replaceChild(fragment, textNode);
     }
   }
 
+  // Process all text nodes in a given node
+  function highlightTermsInNode(rootNode, terms) {
+    if (!rootNode || !terms || terms.length === 0) {
+      return;
+    }
+
+    // Ensure styles are added
+    addHighlightStyles();
+
+    // Create a TreeWalker to efficiently iterate through text nodes
+    const walker = document.createTreeWalker(
+      rootNode,
+      NodeFilter.SHOW_TEXT,
+      {
+        acceptNode: function(node) {
+          // Skip empty text nodes and nodes that are already in highlighted spans
+          if (!node.nodeValue.trim() || 
+              node.parentNode.classList?.contains(HIGHLIGHT_CLASS)) {
+            return NodeFilter.FILTER_REJECT;
+          }
+          return NodeFilter.FILTER_ACCEPT;
+        }
+      }
+    );
+
+    // Process each text node
+    const textNodes = [];
+    let currentNode;
+    while (currentNode = walker.nextNode()) {
+      textNodes.push(currentNode);
+    }
+
+    // Process collected nodes (doing this separately to avoid issues with TreeWalker during DOM modifications)
+    textNodes.forEach(node => highlightTermsInTextNode(node, terms));
+  }
+
+  // Remove all highlights from the page
+  function removeAllHighlights() {
+    const highlights = document.querySelectorAll(`.${HIGHLIGHT_CLASS}`);
+    
+    highlights.forEach(highlight => {
+      // Get the text content and replace the highlight with it
+      const text = highlight.textContent;
+      const textNode = document.createTextNode(text);
+      highlight.parentNode.replaceChild(textNode, highlight);
+    });
+
+    // Clean up by removing the styles
+    removeHighlightStyles();
+  }
+
   // Expose our functionality to the global TechLingo namespace
-  window.techLingoHighlight = {
-    escapeRegExp,
-    createHighlightStyles,
-    removeHighlights
+  window.techLingo.highlight = {
+    highlightTermsInNode,
+    removeAllHighlights
   };
 })();
