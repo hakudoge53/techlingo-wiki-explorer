@@ -1,0 +1,14 @@
+name: Run Command
+
+on: [push, pull_request]
+
+jobs:
+  run-command:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Run Hello World
+      run: echo "Hello, World!"
