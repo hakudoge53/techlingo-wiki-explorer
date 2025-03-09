@@ -7,7 +7,7 @@ tasks:
   - name: Extension building
     command: echo "Run 'npm run build && cd dist && zip -r ../techlingo-wiki-extension.zip *' to build and package extension"
 
-  - name: SSH Setup
+  - name: SSH Setup for Cursor
     command: |
       # Generate SSH key if it doesn't exist
       if [ ! -f ~/.ssh/id_ed25519 ]; then
@@ -18,21 +18,32 @@ tasks:
       
       # Display connection information
       echo ""
-      echo "=== SSH SETUP FOR CURSOR ==="
-      echo "Public key (add this to Gitpod SSH keys):"
+      echo "===== CURSOR SSH CONNECTION SETUP ====="
+      echo "Follow these steps to connect Cursor via SSH:"
+      echo ""
+      echo "1. Copy your public SSH key:"
       cat ~/.ssh/id_ed25519.pub
       echo ""
-      echo "Connection details:"
-      gp ssh-info
+      echo "2. Connection details for Cursor:"
+      echo "   Host: $(gp url 22 | sed 's/https:\/\///')"
+      echo "   Port: 22"
+      echo "   User: gitpod"
       echo ""
-      echo "To connect with Cursor, use the host and port from above."
-      echo "================"
+      echo "3. In Cursor, go to Settings > SSH > Add Remote"
+      echo "   - Enter the host and port from above"
+      echo "   - Paste your SSH key when prompted"
+      echo ""
+      echo "====================================="
 
 ports:
   - port: 8080
     onOpen: open-browser
     visibility: public
+  - port: 22
+    visibility: public
+    onOpen: ignore
 
 vscode:
   extensions:
     - dbaeumer.vscode-eslint
+

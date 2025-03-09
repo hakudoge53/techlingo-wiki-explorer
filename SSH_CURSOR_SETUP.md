@@ -21,13 +21,14 @@ When you start your Gitpod workspace, an automated task will:
 ### 2. Configure Cursor
 
 - Open Cursor on your local machine
-- Go to SSH connection settings
-- Enter the host and port displayed by `gp ssh-info` in your Gitpod terminal
-- Use port forwarding if needed
+- Go to Settings > SSH > Add Remote
+- Enter the host and port displayed in your Gitpod terminal
+- When prompted, use the SSH key you generated
 
 ### 3. Test the connection
 
-- Try connecting through Cursor's interface
+- Click "Connect" in Cursor
+- You should now have access to your Gitpod workspace files
 
 ## Troubleshooting
 
@@ -35,8 +36,10 @@ If you encounter connection issues:
 - Ensure your public key is correctly added to Gitpod
 - Check if your Gitpod workspace is still running
 - Verify that you're using the correct host and port
+- Try restarting your Gitpod workspace and reconnecting
 
 ## Additional Resources
 
 - [Gitpod SSH Documentation](https://www.gitpod.io/docs/configure/ssh)
-- [Cursor Documentation](https://cursor.sh/docs)
+- [Cursor SSH Documentation](https://cursor.sh/docs/ssh)
+
