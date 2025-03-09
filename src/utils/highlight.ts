@@ -55,7 +55,12 @@ export const syncTermsToStorage = (): void => {
   // Check if Chrome API is available before using it
   if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
     chrome.storage.local.set({ techTerms });
+    console.log('Tech terms synced to storage for content script');
   } else {
     console.log('Chrome API not available - running in development mode');
   }
 };
+
+// Call this function when the app initializes to make terms available to content script
+// We do this here because this module is imported early in the app lifecycle
+syncTermsToStorage();

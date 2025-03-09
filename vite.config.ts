@@ -18,7 +18,7 @@ export default defineConfig(({ mode }) => ({
     componentTagger(),
     {
       name: 'copy-content-script',
-      apply: 'build', // Using the literal value 'build'
+      apply: 'build',
       closeBundle() {
         // Only process content script in production mode
         if (mode === 'production') {
@@ -28,8 +28,7 @@ export default defineConfig(({ mode }) => ({
               fs.mkdirSync('dist');
             }
             
-            // Simple file copy approach instead of using Rollup
-            // Copy the pre-bundled content script to the dist folder
+            // Copy content.js directly without any transformation
             fs.copyFileSync('public/content.js', 'dist/content.js');
             console.log('Content script copied successfully!');
           } catch (error) {
