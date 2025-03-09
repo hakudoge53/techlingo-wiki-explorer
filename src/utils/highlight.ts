@@ -61,8 +61,14 @@ export const syncTermsToStorage = (): void => {
       category: term.category
     }));
     
-    chrome.storage.local.set({ techTerms: termsForContentScript });
-    console.log('Tech terms synced to storage for content script', termsForContentScript.length);
+    chrome.storage.local.set({ techTerms: termsForContentScript }, () => {
+      console.log('Tech terms synced to storage for content script', termsForContentScript.length);
+      
+      // Debug: Verify we can retrieve the terms
+      chrome.storage.local.get(['techTerms'], (result) => {
+        console.log(`Retrieved ${result.techTerms?.length || 0} terms from storage`);
+      });
+    });
   } else {
     console.log('Chrome API not available - running in development mode');
   }
