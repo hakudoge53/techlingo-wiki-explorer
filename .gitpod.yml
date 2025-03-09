@@ -1,0 +1,17 @@
+
+tasks:
+  - init: npm install
+    command: npm run dev
+    name: Development server
+
+  - name: Extension building
+    command: echo "Run 'npm run build && cd dist && zip -r ../techlingo-wiki-extension.zip *' to build and package extension"
+
+ports:
+  - port: 8080
+    onOpen: open-browser
+    visibility: public
+
+vscode:
+  extensions:
+    - dbaeumer.vscode-eslint
