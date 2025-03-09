@@ -1,3 +1,4 @@
+
 ARG VARIANT=22-bookworm
 FROM node:${VARIANT}
 
