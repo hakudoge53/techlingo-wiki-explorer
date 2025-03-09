@@ -4,10 +4,18 @@ import { categories, techTerms, filterTerms, filterByCategory, type TechTerm } f
 import TermCard from './TermCard';
 import Search from './Search';
 
-const TermList = () => {
+interface TermListProps {
+  searchQuery?: string;
+  onSelectTerm?: (term: string | null) => void;
+}
+
+const TermList = ({ searchQuery: externalSearchQuery, onSelectTerm }: TermListProps = {}) => {
   const [filteredTerms, setFilteredTerms] = useState<TechTerm[]>(techTerms);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [internalSearchQuery, setInternalSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
+  
+  // Use external search query if provided, otherwise use internal
+  const searchQuery = externalSearchQuery !== undefined ? externalSearchQuery : internalSearchQuery;
   
   // Apply filters whenever search query or category changes
   useEffect(() => {
@@ -24,6 +32,13 @@ const TermList = () => {
     setFilteredTerms(result);
   }, [searchQuery, selectedCategory]);
 
+  const handleTermSelect = (termId: string) => {
+    // Call the external handler if provided
+    if (onSelectTerm) {
+      onSelectTerm(termId);
+    }
+  };
+
   return (
     <section id="explore" className="py-8 px-2 md:px-4">
       <div className="max-w-7xl mx-auto">
@@ -39,7 +54,10 @@ const TermList = () => {
           </p>
         </div>
         
-        <Search onSearch={setSearchQuery} />
+        {/* Only show internal search if external search is not provided */}
+        {externalSearchQuery === undefined && (
+          <Search onSearch={setInternalSearchQuery} />
+        )}
         
         <div className="mt-6" id="categories">
           <div className="flex flex-wrap justify-center gap-2 mb-8">
@@ -62,7 +80,12 @@ const TermList = () => {
           {filteredTerms.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredTerms.map((term, index) => (
-                <TermCard key={term.id} term={term} index={index} />
+                <TermCard 
+                  key={term.id} 
+                  term={term} 
+                  index={index}
+                  onClick={() => handleTermSelect(term.id)} 
+                />
               ))}
             </div>
           ) : (
