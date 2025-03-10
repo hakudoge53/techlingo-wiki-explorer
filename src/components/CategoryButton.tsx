@@ -23,3 +23,4 @@ const CategoryButton = ({ category, isSelected, onClick }: CategoryButtonProps) 
 };
 
 export default CategoryButton;
+
