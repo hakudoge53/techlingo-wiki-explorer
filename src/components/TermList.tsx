@@ -61,7 +61,7 @@ const TermList = ({ searchQuery: externalSearchQuery, onSelectTerm }: TermListPr
         )}
         
         <div className="mt-4" id="categories">
-          <ScrollArea className="whitespace-nowrap pb-2" orientation="horizontal">
+          <div className="whitespace-nowrap pb-2 overflow-x-auto">
             <div className="flex space-x-2 px-1">
               <CategoryButton 
                 category="All" 
@@ -78,7 +78,7 @@ const TermList = ({ searchQuery: externalSearchQuery, onSelectTerm }: TermListPr
                 />
               ))}
             </div>
-          </ScrollArea>
+          </div>
           
           {filteredTerms.length > 0 ? (
             <ScrollArea className="h-[400px] mt-4 pr-4">
