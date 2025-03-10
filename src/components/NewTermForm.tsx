@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useGlossarySettings } from '@/hooks/useGlossarySettings';
 import { Loader2 } from 'lucide-react';
-import { categories } from '@/utils/data';
+import { categories } from '@/utils/categories';
 import { toast } from '@/components/ui/use-toast';
 
 interface NewTermFormProps {

@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { type TechTerm } from '@/utils/data';
+import { type TechTerm } from '@/utils/types';
 import { ChevronRightIcon, ExternalLinkIcon } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';

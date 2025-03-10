@@ -1,6 +1,9 @@
 
 import { useState, useEffect } from 'react';
-import { categories, techTerms, filterTerms, filterByCategory, type TechTerm } from '@/utils/data';
+import { categories } from '@/utils/categories';
+import { techTerms } from '@/utils/termData';
+import { filterTerms, filterByCategory } from '@/utils/termUtils';
+import { type TechTerm } from '@/utils/types';
 import TermCard from './TermCard';
 import Search from './Search';
 import { ScrollArea } from '@/components/ui/scroll-area';
