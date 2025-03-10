@@ -4,6 +4,7 @@ import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import UserProfile from './UserProfile';
 import HighlightSettings from './HighlightSettings';
+import GlossarySettings from './GlossarySettings';
 
 const Settings = () => {
   const { signOut } = useAuth();
@@ -11,6 +12,10 @@ const Settings = () => {
   return (
     <div className="space-y-6">
       <UserProfile />
+      
+      <Separator className="my-6" />
+      
+      <GlossarySettings />
       
       <Separator className="my-6" />
       
