@@ -6,6 +6,7 @@ export interface TechTerm {
   longDescription?: string;
   examples?: string[];
   relatedTerms?: string[];
+  url?: string;
 }
 
 export const categories = [
@@ -294,7 +295,8 @@ export const syncTermsToStorage = (): void => {
       const termsForContentScript = techTerms.map(term => ({
         term: term.term,
         description: term.description,
-        category: term.category
+        category: term.category,
+        url: term.url
       }));
       
       chrome.storage.local.set({ techTerms: termsForContentScript }, () => {

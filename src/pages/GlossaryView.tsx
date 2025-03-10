@@ -81,12 +81,19 @@ const GlossaryView = () => {
               )}
               
               <div className="border-t pt-4 mt-6">
-                <Button variant="outline" size="sm" className="text-xs" asChild>
-                  <a href="#" target="_blank" rel="noopener noreferrer">
+                {selectedTerm.url ? (
+                  <Button variant="outline" size="sm" className="text-xs" asChild>
+                    <a href={selectedTerm.url} target="_blank" rel="noopener noreferrer">
+                      <ExternalLinkIcon className="h-3 w-3 mr-1" />
+                      View full documentation
+                    </a>
+                  </Button>
+                ) : (
+                  <Button variant="outline" size="sm" className="text-xs" disabled>
                     <ExternalLinkIcon className="h-3 w-3 mr-1" />
-                    View full documentation
-                  </a>
-                </Button>
+                    No documentation available
+                  </Button>
+                )}
               </div>
             </div>
           </div>

@@ -2,8 +2,9 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { type TechTerm } from '@/utils/data';
-import { ChevronRightIcon } from 'lucide-react';
+import { ChevronRightIcon, ExternalLinkIcon } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface TermCardProps {
   term: TechTerm;
@@ -87,10 +88,33 @@ const TermCard = ({ term, index, onClick, compact = false }: TermCardProps) => {
               {term.description}
             </p>
             
-            <div 
-              className={`mt-4 text-sm font-medium text-primary flex items-center transition-all duration-300 ${isHovered ? 'opacity-100' : 'opacity-70'}`}
-            >
-              <span>Read more</span>
+            <div className="mt-4 flex justify-between items-center">
+              <div 
+                className={`text-sm font-medium text-primary flex items-center transition-all duration-300 ${isHovered ? 'opacity-100' : 'opacity-70'}`}
+              >
+                <span>Read more</span>
+              </div>
+              
+              {term.url && (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <a 
+                        href={term.url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-muted-foreground hover:text-primary transition-colors"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <ExternalLinkIcon className="h-4 w-4" />
+                      </a>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Open external resource</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
             </div>
           </div>
         </div>
