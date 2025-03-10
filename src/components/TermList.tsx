@@ -2,12 +2,15 @@
 import { useState, useEffect } from 'react';
 import { categories, techTerms, filterTerms, filterByCategory, type TechTerm } from '@/utils/data';
 import TermCard from './TermCard';
+import Search from './Search';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface TermListProps {
   searchQuery?: string;
+  onSelectTerm?: (term: string | null) => void;
 }
 
-const TermList = ({ searchQuery: externalSearchQuery }: TermListProps = {}) => {
+const TermList = ({ searchQuery: externalSearchQuery, onSelectTerm }: TermListProps = {}) => {
   const [filteredTerms, setFilteredTerms] = useState<TechTerm[]>(techTerms);
   const [internalSearchQuery, setInternalSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -30,6 +33,13 @@ const TermList = ({ searchQuery: externalSearchQuery }: TermListProps = {}) => {
     setFilteredTerms(result);
   }, [searchQuery, selectedCategory]);
 
+  const handleTermSelect = (termId: string) => {
+    // Call the external handler if provided
+    if (onSelectTerm) {
+      onSelectTerm(termId);
+    }
+  };
+
   return (
     <section id="explore" className="py-4 px-2 md:px-4">
       <div className="max-w-7xl mx-auto">
@@ -44,6 +54,11 @@ const TermList = ({ searchQuery: externalSearchQuery }: TermListProps = {}) => {
             Search our database of {techTerms.length} technology terms
           </p>
         </div>
+        
+        {/* Only show internal search if external search is not provided */}
+        {externalSearchQuery === undefined && (
+          <Search onSearch={setInternalSearchQuery} />
+        )}
         
         <div className="mt-4" id="categories">
           <div className="overflow-x-auto pb-2">
@@ -66,18 +81,19 @@ const TermList = ({ searchQuery: externalSearchQuery }: TermListProps = {}) => {
           </div>
           
           {filteredTerms.length > 0 ? (
-            <div className="h-[400px] mt-4 pr-4 overflow-y-auto">
+            <ScrollArea className="h-[400px] mt-4 pr-4">
               <div className="space-y-1">
                 {filteredTerms.map((term, index) => (
                   <TermCard 
                     key={term.id} 
                     term={term} 
                     index={index}
+                    onClick={() => handleTermSelect(term.id)}
                     compact={true}
                   />
                 ))}
               </div>
-            </div>
+            </ScrollArea>
           ) : (
             <div className="text-center py-8">
               <h3 className="text-lg font-semibold mb-2">No results found</h3>

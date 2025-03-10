@@ -1,13 +1,12 @@
 
 # TechLingo Wiki Chrome Extension
 
-A Chrome extension providing a glossary of technical terms and definitions for recruiters and developers.
+A Chrome extension providing a glossary of technical terms and definitions for developers.
 
 ## Features
 
 - Quick access to tech terminology right from your browser
 - Search functionality to find specific terms
-- Category filtering to browse terms by category
 - Highlights technical terms on web pages
 - Shows tooltips with definitions when hovering over highlighted terms
 - Clean, minimalist design with smooth animations
@@ -74,14 +73,6 @@ You can search for specific terms in the extension's database:
 2. Type your search query in the search bar
 3. Results will filter in real-time
 
-### Category Filtering
-
-Browse terms by category:
-
-1. Open the extension popup
-2. Click on a category button
-3. View terms filtered by that category
-
 ## Extension Structure
 
 - `manifest.json`: Extension configuration
@@ -93,10 +84,9 @@ Browse terms by category:
   - `Search.tsx`: Search component
   - `Settings.tsx`: Extension settings
 
-## Future Improvements
+## Uploading to Chrome Web Store
 
-- Add user-defined custom terms
-- Improve matching algorithm (stemming, lemmatization)
-- Add dark mode
-- Export/import glossary data
-- Customize highlight colors
+1. Create a ZIP file of the `dist` directory
+2. Go to the [Chrome Developer Dashboard](https://chrome.google.com/webstore/devconsole/)
+3. Click "New Item" and upload your ZIP file
+4. Fill in the required information and submit for review

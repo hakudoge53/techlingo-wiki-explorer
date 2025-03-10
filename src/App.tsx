@@ -5,12 +5,14 @@ import { toast } from "sonner";
 import Navbar from '@/components/Navbar';
 import Search from '@/components/Search';
 import TermList from '@/components/TermList';
+import TermDetail from '@/pages/TermDetail';
 import Footer from '@/components/Footer';
 import Settings from '@/components/Settings';
 import { techTerms } from '@/utils/data';
 
 function App() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedTermId, setSelectedTermId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState('explore');
 
   // Send glossary terms to the content script when they're needed
@@ -43,6 +45,18 @@ function App() {
     }
   }, []);
 
+  const handleTermSelect = (termId: string | null) => {
+    setSelectedTermId(termId);
+    if (termId) {
+      setActiveTab('detail');
+    }
+  };
+
+  const handleBackToList = () => {
+    setSelectedTermId(null);
+    setActiveTab('explore');
+  };
+
   const handleHighlightPage = () => {
     sendTermsToContentScript();
   };
@@ -53,8 +67,9 @@ function App() {
       
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <div className="px-4 py-2 border-b">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="explore">Explore</TabsTrigger>
+            {selectedTermId && <TabsTrigger value="detail">Detail</TabsTrigger>}
             <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
         </div>
@@ -72,7 +87,17 @@ function App() {
             </div>
             <TermList 
               searchQuery={searchQuery} 
+              onSelectTerm={handleTermSelect}
             />
+          </TabsContent>
+          
+          <TabsContent value="detail" className="mt-0 p-0">
+            {selectedTermId && (
+              <TermDetail 
+                termId={selectedTermId} 
+                onBack={handleBackToList} 
+              />
+            )}
           </TabsContent>
           
           <TabsContent value="settings" className="mt-0">
