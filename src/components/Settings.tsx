@@ -1,20 +1,30 @@
 
+import { useAuth } from '@/contexts/AuthContext';
+import { Separator } from '@/components/ui/separator';
+import { Button } from '@/components/ui/button';
 import UserProfile from './UserProfile';
 import HighlightSettings from './HighlightSettings';
-import { useAuth } from '@/contexts/AuthContext';
 
 const Settings = () => {
-  const { user } = useAuth();
-
-  // If no user is authenticated, don't render settings
-  if (!user) {
-    return null;
-  }
+  const { signOut } = useAuth();
 
   return (
-    <div className="space-y-4 p-4 border-t">
+    <div className="space-y-6">
       <UserProfile />
+      
+      <Separator className="my-6" />
+      
       <HighlightSettings />
+      
+      <div className="flex justify-end mt-6">
+        <Button 
+          variant="destructive" 
+          onClick={signOut}
+          size="sm"
+        >
+          Sign Out
+        </Button>
+      </div>
     </div>
   );
 };
