@@ -9,10 +9,6 @@ const GlossaryView = () => {
   
   const selectedTerm = selectedTermId ? getTermById(selectedTermId) : null;
   
-  const handleTermSelect = (termId: string) => {
-    setSelectedTermId(termId);
-  };
-  
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6">Tech Glossary</h1>
@@ -28,7 +24,7 @@ const GlossaryView = () => {
           />
           <TermList 
             searchQuery={searchQuery} 
-            onSelectTerm={handleTermSelect} 
+            onSelectTerm={setSelectedTermId} 
           />
         </div>
         
