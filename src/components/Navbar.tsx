@@ -19,8 +19,8 @@ const Navbar = () => {
   return (
     <header 
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300 px-6 md:px-8 flex items-center justify-between h-16",
-        isScrolled ? "glass shadow-soft" : "bg-transparent"
+        "w-full h-16 transition-all duration-300 px-6 md:px-8 flex items-center justify-between",
+        isScrolled ? "glass shadow-soft" : "bg-background"
       )}
     >
       <Link 
