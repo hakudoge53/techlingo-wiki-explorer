@@ -17,8 +17,7 @@ function App() {
   const sendTermsToContentScript = async () => {
     try {
       if (chrome?.tabs) {
-        const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
-        const activeTab = tabs[0];
+        const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
         if (activeTab?.id) {
           chrome.tabs.sendMessage(activeTab.id, {
             action: 'updateGlossary',
@@ -49,49 +48,40 @@ function App() {
   };
 
   return (
-    <div className="popup-container flex flex-col h-full">
-      {/* Fixed navbar at the top with proper z-index */}
-      <div className="fixed top-0 left-0 right-0 z-50">
-        <Navbar />
-      </div>
+    <div className="popup-container">
+      <Navbar />
       
-      {/* Main content with proper spacing to avoid navbar overlap */}
-      <div className="flex-1 flex flex-col mt-16 overflow-hidden">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full flex-1 flex flex-col">
-          <div className="px-4 py-2 border-b bg-background">
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="explore">Explore</TabsTrigger>
-              <TabsTrigger value="settings">Settings</TabsTrigger>
-            </TabsList>
-          </div>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <div className="px-4 py-2 border-b">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="explore">Explore</TabsTrigger>
+            <TabsTrigger value="settings">Settings</TabsTrigger>
+          </TabsList>
+        </div>
+        
+        <div className="flex-1 overflow-y-auto">
+          <TabsContent value="explore" className="mt-0 p-0">
+            <div className="px-4 py-3">
+              <Search onSearch={setSearchQuery} />
+              <button 
+                onClick={handleHighlightPage}
+                className="w-full mt-2 p-2 text-sm bg-accent text-accent-foreground rounded-md hover:bg-accent/80 transition-colors"
+              >
+                Highlight Terms on This Page
+              </button>
+            </div>
+            <TermList 
+              searchQuery={searchQuery} 
+            />
+          </TabsContent>
           
-          <div className="flex-1 overflow-y-auto">
-            <TabsContent value="explore" className="mt-0 p-0 h-full">
-              <div className="px-4 py-3">
-                <Search onSearch={setSearchQuery} />
-                <button 
-                  onClick={handleHighlightPage}
-                  className="w-full mt-2 p-2 text-sm bg-accent text-accent-foreground rounded-md hover:bg-accent/80 transition-colors"
-                >
-                  Highlight Terms on This Page
-                </button>
-              </div>
-              <TermList 
-                searchQuery={searchQuery} 
-              />
-            </TabsContent>
-            
-            <TabsContent value="settings" className="mt-0 h-full">
-              <Settings />
-            </TabsContent>
-          </div>
-        </Tabs>
-      </div>
+          <TabsContent value="settings" className="mt-0">
+            <Settings />
+          </TabsContent>
+        </div>
+      </Tabs>
       
-      {/* Footer stays at the bottom */}
-      <div className="mt-auto">
-        <Footer />
-      </div>
+      <Footer />
     </div>
   );
 }

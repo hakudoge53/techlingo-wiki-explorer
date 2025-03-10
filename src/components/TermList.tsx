@@ -5,10 +5,9 @@ import TermCard from './TermCard';
 
 interface TermListProps {
   searchQuery?: string;
-  onSelectTerm?: (termId: string) => void;
 }
 
-const TermList = ({ searchQuery: externalSearchQuery, onSelectTerm }: TermListProps = {}) => {
+const TermList = ({ searchQuery: externalSearchQuery }: TermListProps = {}) => {
   const [filteredTerms, setFilteredTerms] = useState<TechTerm[]>(techTerms);
   const [internalSearchQuery, setInternalSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -30,12 +29,6 @@ const TermList = ({ searchQuery: externalSearchQuery, onSelectTerm }: TermListPr
     
     setFilteredTerms(result);
   }, [searchQuery, selectedCategory]);
-
-  const handleTermClick = (termId: string) => {
-    if (onSelectTerm) {
-      onSelectTerm(termId);
-    }
-  };
 
   return (
     <section id="explore" className="py-4 px-2 md:px-4">
@@ -81,7 +74,6 @@ const TermList = ({ searchQuery: externalSearchQuery, onSelectTerm }: TermListPr
                     term={term} 
                     index={index}
                     compact={true}
-                    onClick={() => handleTermClick(term.id)}
                   />
                 ))}
               </div>
