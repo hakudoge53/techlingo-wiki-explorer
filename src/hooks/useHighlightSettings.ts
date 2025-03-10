@@ -83,13 +83,18 @@ export const useHighlightSettings = () => {
       if (error) throw error;
       
       console.log('Saved settings:', settings);
-      toast.success('Settings updated');
       
       // Update content script with new settings
-      updateContentScript(
-        settings.highlight_enabled !== undefined ? settings.highlight_enabled : highlightEnabled,
-        settings.highlight_color !== undefined ? settings.highlight_color : highlightColor
-      );
+      const updatedEnabled = settings.highlight_enabled !== undefined ? settings.highlight_enabled : highlightEnabled;
+      const updatedColor = settings.highlight_color !== undefined ? settings.highlight_color : highlightColor;
+      
+      const success = await updateContentScript(updatedEnabled, updatedColor);
+      
+      if (success) {
+        toast.success('Settings updated');
+      } else {
+        toast.error('Failed to update highlighting. Try refreshing the page.');
+      }
     } catch (error) {
       console.error('Error saving settings:', error);
       toast.error('Failed to save settings');
@@ -115,10 +120,34 @@ export const useHighlightSettings = () => {
 };
 
 // Helper function to update content script
-const updateContentScript = (enabled: boolean, color: string) => {
-  if (typeof chrome !== 'undefined' && chrome.tabs && chrome.tabs.query) {
+const updateContentScript = (enabled: boolean, color: string): Promise<boolean> => {
+  return new Promise((resolve) => {
+    // If we're not in a Chrome extension environment, resolve with success
+    // This handles development mode where Chrome APIs aren't available
+    if (typeof chrome === 'undefined' || !chrome.tabs || !chrome.tabs.query) {
+      console.log('Chrome API not available - running in development mode');
+      resolve(true);
+      return;
+    }
+    
+    // Set a timeout to handle cases where the message response never comes back
+    const timeoutId = setTimeout(() => {
+      console.error('Timeout: No response from content script');
+      resolve(false);
+    }, 3000);
+    
+    // Try to send message to the active tab
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      if (tabs[0]?.id) {
+      // If no active tab found, resolve with failure
+      if (!tabs || !tabs[0] || !tabs[0].id) {
+        console.log('No active tab found');
+        clearTimeout(timeoutId);
+        resolve(false);
+        return;
+      }
+      
+      try {
+        // Send message to content script
         chrome.tabs.sendMessage(
           tabs[0].id, 
           { 
@@ -129,21 +158,32 @@ const updateContentScript = (enabled: boolean, color: string) => {
             } 
           },
           (response) => {
-            // Check for error using runtime.lastError
-            const error = chrome.runtime?.lastError;
+            clearTimeout(timeoutId);
             
+            // Check for runtime error
+            const error = chrome.runtime?.lastError;
             if (error) {
               console.error('Error sending message:', error);
-            } else if (response?.success) {
-              console.log('Highlighting updated successfully');
+              resolve(false);
+              return;
             }
+            
+            // Check for valid response
+            if (!response) {
+              console.error('No response from content script');
+              resolve(false);
+              return;
+            }
+            
+            console.log('Content script response:', response);
+            resolve(response.success === true);
           }
         );
-      } else {
-        console.log('No active tab found');
+      } catch (error) {
+        clearTimeout(timeoutId);
+        console.error('Exception sending message to content script:', error);
+        resolve(false);
       }
     });
-  } else {
-    console.log('Chrome API not available - running in development mode');
-  }
+  });
 };
