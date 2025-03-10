@@ -1,45 +1,36 @@
 
 import { useState, useEffect } from 'react';
-import { categories } from '@/utils/categories';
 import { techTerms } from '@/utils/termData';
-import { filterTerms, filterByCategory } from '@/utils/termUtils';
-import { type TechTerm } from '@/utils/types';
-import TermCard from './TermCard';
-import Search from './Search';
+import Search from '@/components/Search';
+import TermCard from '@/components/TermCard';
+import { Button } from '@/components/ui/button';
+import CategoryButton from '@/components/CategoryButton';
+import { getCategories } from '@/utils/categories';
+import { filterByCategory, searchTerms } from '@/utils/termUtils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
-interface TermListProps {
-  searchQuery?: string;
-  onSelectTerm?: (term: string | null) => void;
-}
-
-const TermList = ({ searchQuery: externalSearchQuery, onSelectTerm }: TermListProps = {}) => {
-  const [filteredTerms, setFilteredTerms] = useState<TechTerm[]>(techTerms);
-  const [internalSearchQuery, setInternalSearchQuery] = useState('');
+const TermList = ({ searchQuery, onSelectTerm }: { searchQuery?: string, onSelectTerm?: (id: string) => void }) => {
+  const [filteredTerms, setFilteredTerms] = useState(techTerms);
+  const [localSearch, setLocalSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
-  
-  // Use external search query if provided, otherwise use internal
-  const searchQuery = externalSearchQuery !== undefined ? externalSearchQuery : internalSearchQuery;
-  
-  // Apply filters whenever search query or category changes
+
+  // Use prop searchQuery if provided, otherwise use local state
+  const effectiveSearchQuery = searchQuery !== undefined ? searchQuery : localSearch;
+
   useEffect(() => {
     let result = techTerms;
-    
-    if (searchQuery) {
-      result = filterTerms(result, searchQuery);
+    if (effectiveSearchQuery) {
+      result = searchTerms(result, effectiveSearchQuery);
     }
-    
     if (selectedCategory !== 'All') {
       result = filterByCategory(result, selectedCategory);
     }
-    
     setFilteredTerms(result);
-  }, [searchQuery, selectedCategory]);
+  }, [effectiveSearchQuery, selectedCategory]);
 
-  const handleTermSelect = (termId: string) => {
-    // Call the external handler if provided
+  const handleTermClick = (id: string) => {
     if (onSelectTerm) {
-      onSelectTerm(termId);
+      onSelectTerm(id);
     }
   };
 
@@ -50,19 +41,14 @@ const TermList = ({ searchQuery: externalSearchQuery, onSelectTerm }: TermListPr
           <span className="inline-block py-1 px-3 mb-2 text-xs font-medium rounded-full bg-secondary text-muted-foreground">
             TECH GLOSSARY
           </span>
-          <h2 className="text-xl font-bold mb-2">
-            Technology Terms
-          </h2>
+          <h2 className="text-xl font-bold mb-2">Technology Terms</h2>
           <p className="text-muted-foreground text-sm max-w-2xl mx-auto">
             Search our database of {techTerms.length} technology terms
           </p>
         </div>
-        
-        {/* Only show internal search if external search is not provided */}
-        {externalSearchQuery === undefined && (
-          <Search onSearch={setInternalSearchQuery} />
-        )}
-        
+
+        {searchQuery === undefined && <Search onSearch={setLocalSearch} />}
+
         <div className="mt-4" id="categories">
           <div className="whitespace-nowrap pb-2 overflow-x-auto">
             <div className="flex space-x-2 px-1">
@@ -71,28 +57,27 @@ const TermList = ({ searchQuery: externalSearchQuery, onSelectTerm }: TermListPr
                 isSelected={selectedCategory === 'All'} 
                 onClick={() => setSelectedCategory('All')} 
               />
-              
-              {categories.map(category => (
-                <CategoryButton 
+              {getCategories().map((category) => (
+                <CategoryButton
                   key={category}
-                  category={category} 
-                  isSelected={selectedCategory === category} 
-                  onClick={() => setSelectedCategory(category)} 
+                  category={category}
+                  isSelected={selectedCategory === category}
+                  onClick={() => setSelectedCategory(category)}
                 />
               ))}
             </div>
           </div>
-          
+
           {filteredTerms.length > 0 ? (
-            <ScrollArea className="h-[400px] mt-4 pr-4">
-              <div className="space-y-1">
+            <ScrollArea className="h-[400px] mt-4">
+              <div className="space-y-1 pr-4">
                 {filteredTerms.map((term, index) => (
-                  <TermCard 
-                    key={term.id} 
-                    term={term} 
+                  <TermCard
+                    key={term.id}
+                    term={term}
                     index={index}
-                    onClick={() => handleTermSelect(term.id)}
-                    compact={true}
+                    onClick={() => handleTermClick(term.id)}
+                    compact
                   />
                 ))}
               </div>
@@ -110,26 +95,5 @@ const TermList = ({ searchQuery: externalSearchQuery, onSelectTerm }: TermListPr
     </section>
   );
 };
-
-const CategoryButton = ({ 
-  category, 
-  isSelected, 
-  onClick 
-}: { 
-  category: string; 
-  isSelected: boolean; 
-  onClick: () => void; 
-}) => (
-  <button
-    onClick={onClick}
-    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
-      isSelected 
-        ? 'bg-primary text-primary-foreground shadow-soft' 
-        : 'bg-secondary/60 text-foreground hover:bg-secondary'
-    }`}
-  >
-    {category}
-  </button>
-);
 
 export default TermList;
