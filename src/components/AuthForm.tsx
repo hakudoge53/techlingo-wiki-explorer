@@ -20,6 +20,20 @@ const AuthForm = () => {
     setLoading(true);
     
     try {
+      const { data: userExists, error: checkError } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('email', email)
+        .maybeSingle();
+
+      if (checkError) throw checkError;
+      
+      if (userExists) {
+        toast.error('An account with this email already exists');
+        setLoading(false);
+        return;
+      }
+      
       const { error } = await supabase.auth.signUp({
         email,
         password,
@@ -31,6 +45,16 @@ const AuthForm = () => {
       });
 
       if (error) throw error;
+      
+      // Also update the profiles table directly in case the trigger doesn't work
+      await supabase
+        .from('profiles')
+        .upsert({
+          id: (await supabase.auth.getUser()).data.user?.id,
+          email,
+          customer_portal_id: portalId
+        });
+      
       toast.success('Account created! Please check your email to confirm your account.');
     } catch (error) {
       if (error instanceof Error) {

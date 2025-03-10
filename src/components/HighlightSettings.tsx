@@ -27,15 +27,37 @@ const HighlightSettings = () => {
       if (!user) return;
       
       try {
+        // Try to get existing settings
         const { data, error } = await supabase
           .from('user_settings')
-          .select('highlight_enabled, highlight_color')
+          .select('*')
           .eq('user_id', user.id)
           .single();
         
-        if (error) throw error;
-        
-        if (data) {
+        if (error) {
+          // If no settings found, create default settings
+          if (error.code === 'PGRST116') {
+            const { data: newData, error: insertError } = await supabase
+              .from('user_settings')
+              .insert([{ 
+                user_id: user.id, 
+                highlight_enabled: true, 
+                highlight_color: '#9b87f5' 
+              }])
+              .select('*')
+              .single();
+              
+            if (insertError) throw insertError;
+            
+            if (newData) {
+              setHighlightEnabled(newData.highlight_enabled);
+              setHighlightColor(newData.highlight_color);
+              console.log('Created default highlight settings:', newData);
+            }
+          } else {
+            throw error;
+          }
+        } else if (data) {
           setHighlightEnabled(data.highlight_enabled);
           setHighlightColor(data.highlight_color);
           console.log('Loaded highlight settings:', data);

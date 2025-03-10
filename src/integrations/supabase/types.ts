@@ -156,6 +156,7 @@ export type Database = {
       profiles: {
         Row: {
           created_at: string | null
+          customer_portal_id: string | null
           email: string | null
           extension_settings: Json | null
           id: string
@@ -167,6 +168,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
+          customer_portal_id?: string | null
           email?: string | null
           extension_settings?: Json | null
           id: string
@@ -178,6 +180,7 @@ export type Database = {
         }
         Update: {
           created_at?: string | null
+          customer_portal_id?: string | null
           email?: string | null
           extension_settings?: Json | null
           id?: string
@@ -186,6 +189,33 @@ export type Database = {
           preferred_language?: string | null
           status?: string | null
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      user_settings: {
+        Row: {
+          created_at: string | null
+          highlight_color: string | null
+          highlight_enabled: boolean | null
+          id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          highlight_color?: string | null
+          highlight_enabled?: boolean | null
+          id?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          highlight_color?: string | null
+          highlight_enabled?: boolean | null
+          id?: string
+          updated_at?: string | null
+          user_id?: string
         }
         Relationships: []
       }

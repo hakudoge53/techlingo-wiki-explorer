@@ -28,8 +28,12 @@ const UserProfile = () => {
           .eq('id', user.id)
           .single();
 
-        if (error) throw error;
-        setProfile(data);
+        if (error) {
+          console.error('Error loading profile:', error);
+          // Don't throw error here, just continue with null profile
+        } else {
+          setProfile(data);
+        }
       } catch (error) {
         console.error('Error loading profile:', error);
       } finally {
