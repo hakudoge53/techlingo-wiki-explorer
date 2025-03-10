@@ -4,6 +4,8 @@ import { Loader2 } from 'lucide-react';
 import { useHighlightSettings } from '@/hooks/useHighlightSettings';
 import HighlightToggle from './highlight/HighlightToggle';
 import HighlightColorPicker from './highlight/HighlightColorPicker';
+import { useEffect } from 'react';
+import { syncTermsToStorage } from '@/utils/termUtils';
 
 const HighlightSettings = () => {
   const {
@@ -14,6 +16,13 @@ const HighlightSettings = () => {
     setHighlightEnabled,
     setHighlightColor
   } = useHighlightSettings();
+
+  // Make sure terms are synced to storage when the component mounts
+  useEffect(() => {
+    if (typeof chrome !== 'undefined' && chrome.storage) {
+      syncTermsToStorage();
+    }
+  }, []);
 
   if (isLoading) {
     return (

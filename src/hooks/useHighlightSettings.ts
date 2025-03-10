@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from "sonner";
 import { useAuth } from '@/contexts/AuthContext';
+import { syncTermsToStorage } from '@/utils/termUtils';
 
 interface UserSettings {
   highlight_enabled: boolean;
@@ -88,6 +89,9 @@ export const useHighlightSettings = () => {
       const updatedEnabled = settings.highlight_enabled !== undefined ? settings.highlight_enabled : highlightEnabled;
       const updatedColor = settings.highlight_color !== undefined ? settings.highlight_color : highlightColor;
       
+      // Ensure terms are synced to storage
+      syncTermsToStorage();
+      
       const success = await updateContentScript(updatedEnabled, updatedColor);
       
       if (success) {
@@ -102,6 +106,13 @@ export const useHighlightSettings = () => {
       setIsUpdating(false);
     }
   };
+
+  // Also sync terms to extension storage when component mounts
+  useEffect(() => {
+    if (typeof chrome !== 'undefined' && chrome.storage) {
+      syncTermsToStorage();
+    }
+  }, []);
 
   return {
     highlightEnabled,

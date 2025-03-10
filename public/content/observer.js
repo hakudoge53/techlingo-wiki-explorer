@@ -1,56 +1,53 @@
 
-// DOM Observation functionality
-
 (function() {
-  // Create namespace for our extension if it doesn't exist
+  // Create namespace for our extension
   window.techLingo = window.techLingo || {};
   
-  let currentObserver = null;
-
-  /**
-   * Set up observer for dynamic content
-   * @param {boolean} highlightEnabled - Whether highlighting is enabled
-   * @param {Function} processNode - The node processing function
-   * @returns {MutationObserver} The mutation observer
-   */
-  function setupMutationObserver(highlightEnabled, processNode) {
-    // Disconnect any existing observer
-    if (currentObserver) {
-      currentObserver.disconnect();
-    }
-
-    // If highlighting is not enabled, don't observe
-    if (!highlightEnabled) {
-      return null;
-    }
-
-    // Create a new observer
-    const observer = new MutationObserver((mutations) => {
-      for (const mutation of mutations) {
-        if (mutation.type === 'childList') {
-          mutation.addedNodes.forEach(node => {
-            if (node.nodeType === 1) { // Element node
-              processNode(node);
+  // Mutation observer to detect DOM changes
+  let observer = null;
+  
+  // Start observing DOM changes
+  function startObserver() {
+    if (observer) return; // Already observing
+    
+    observer = new MutationObserver(function(mutations) {
+      mutations.forEach(function(mutation) {
+        if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+          mutation.addedNodes.forEach(function(node) {
+            if (node.nodeType === Node.ELEMENT_NODE) {
+              const terms = window.techLingo.terms.getTerms();
+              const settings = window.techLingo.terms.getSettings();
+              
+              if (settings.enabled && terms && terms.length > 0) {
+                window.techLingo.highlight.processNode(node, terms, settings.color);
+              }
             }
           });
         }
-      }
+      });
     });
     
     // Start observing
-    observer.observe(document.body, { 
-      childList: true, 
-      subtree: true 
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
     });
     
-    // Store the current observer
-    currentObserver = observer;
-    
-    return observer;
+    console.log('TechLingo observer started');
   }
-
-  // Expose our functionality to the global TechLingo namespace
+  
+  // Stop observing DOM changes
+  function stopObserver() {
+    if (observer) {
+      observer.disconnect();
+      observer = null;
+      console.log('TechLingo observer stopped');
+    }
+  }
+  
+  // Make functions accessible
   window.techLingo.observer = {
-    setupMutationObserver
+    startObserver,
+    stopObserver
   };
 })();
