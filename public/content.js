@@ -1,43 +1,110 @@
 
-// This file serves as the entry point for the content script
+console.log('TechLingo Wiki content script loaded');
 
-(function() {
-  console.log('TechLingo Wiki: Content script loaded');
+// Initialize highlighting options with default values
+let highlightOptions = {
+  enabled: true,
+  color: '#9b87f5',
+};
+
+// Listen for messages from the extension popup
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  console.log('Message received in content script:', message);
   
-  // Function to load dependencies in sequence with better error handling
-  function loadScript(src, callback) {
-    try {
-      const script = document.createElement('script');
-      script.src = chrome.runtime.getURL(src);
-      script.onload = function() {
-        script.remove(); // Clean up after loading
-        if (callback) callback();
-      };
-      script.onerror = function(error) {
-        console.error('TechLingo Wiki: Failed to load script', src, error);
-        // Continue with next script to avoid complete failure
-        if (callback) callback();
-      };
-      (document.head || document.documentElement).appendChild(script);
-    } catch (error) {
-      console.error('TechLingo Wiki: Error during script loading:', error);
-      if (callback) callback(); // Continue the chain
+  if (message.action === 'updateHighlightSettings') {
+    // Update highlight settings
+    highlightOptions.enabled = message.settings.enabled;
+    highlightOptions.color = message.settings.color;
+    
+    console.log('Updated highlight settings:', highlightOptions);
+    
+    // Apply or remove highlighting based on the new settings
+    if (highlightOptions.enabled) {
+      applyHighlighting();
+    } else {
+      removeHighlighting();
     }
+    
+    sendResponse({ success: true });
+    return true;
   }
+  
+  // Legacy support for the old toggle action
+  if (message.action === 'toggleHighlight') {
+    highlightOptions.enabled = message.enabled;
+    
+    if (highlightOptions.enabled) {
+      applyHighlighting();
+    } else {
+      removeHighlighting();
+    }
+    
+    sendResponse({ success: true });
+    return true;
+  }
+});
 
-  // Simplified error handling
+// Import and initialize the scripts from the content directory
+try {
+  importScripts(
+    chrome.runtime.getURL('content/terms.js'),
+    chrome.runtime.getURL('content/highlight.js'),
+    chrome.runtime.getURL('content/observer.js'),
+    chrome.runtime.getURL('content/main.js')
+  );
+  
+  // Wait for the DOM to be fully loaded
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeTechLingo);
+  } else {
+    initializeTechLingo();
+  }
+} catch (e) {
+  console.error('TechLingo Wiki: Error loading scripts', e);
+}
+
+// Main initialization function
+function initializeTechLingo() {
+  console.log('TechLingo Wiki: Initializing');
+  
+  // Check if highlighting is enabled in the user settings
+  if (highlightOptions.enabled) {
+    applyHighlighting();
+  }
+  
+  // Set up the mutation observer to watch for new content
+  setupMutationObserver();
+}
+
+// Function to apply highlighting
+function applyHighlighting() {
+  console.log('Applying highlighting with color:', highlightOptions.color);
+  
   try {
-    // Load scripts in sequence with better error handling
-    loadScript('content/terms.js', function() {
-      loadScript('content/highlight.js', function() {
-        loadScript('content/observer.js', function() {
-          loadScript('content/main.js', function() {
-            console.log('TechLingo Wiki: All content scripts loaded successfully');
-          });
-        });
-      });
+    // Get all text nodes in the document
+    const textNodes = getTextNodes(document.body);
+    
+    // Highlight tech terms in the text nodes
+    highlightTermsInNodes(textNodes, techTermsArray, highlightOptions.color);
+  } catch (e) {
+    console.error('TechLingo Wiki: Error applying highlighting', e);
+  }
+}
+
+// Function to remove highlighting
+function removeHighlighting() {
+  console.log('Removing highlighting');
+  
+  try {
+    // Get all tech term span elements
+    const techTermSpans = document.querySelectorAll('.tech-term-highlight');
+    
+    // Remove each span by replacing it with its text content
+    techTermSpans.forEach(span => {
+      const textNode = document.createTextNode(span.textContent || '');
+      span.parentNode?.replaceChild(textNode, span);
     });
   } catch (e) {
-    console.error('TechLingo Wiki: Failed to initialize content scripts', e);
+    console.error('TechLingo Wiki: Error removing highlighting', e);
   }
-})();
+}

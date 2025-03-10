@@ -9,16 +9,201 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      glossaries: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          organization_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          organization_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          organization_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "glossaries_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      glossary_terms: {
+        Row: {
+          category: string | null
+          created_at: string
+          definition: string
+          glossary_id: string
+          id: string
+          term: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          definition: string
+          glossary_id: string
+          id?: string
+          term: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          definition?: string
+          glossary_id?: string
+          id?: string
+          term?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "glossary_terms_glossary_id_fkey"
+            columns: ["glossary_id"]
+            isOneToOne: false
+            referencedRelation: "glossaries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organization_members: {
+        Row: {
+          created_at: string
+          id: string
+          invitation_token: string | null
+          invited_email: string | null
+          invited_name: string | null
+          organization_id: string
+          role: Database["public"]["Enums"]["user_role"]
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          invitation_token?: string | null
+          invited_email?: string | null
+          invited_name?: string | null
+          organization_id: string
+          role?: Database["public"]["Enums"]["user_role"]
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          invitation_token?: string | null
+          invited_email?: string | null
+          invited_name?: string | null
+          organization_id?: string
+          role?: Database["public"]["Enums"]["user_role"]
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "organization_members_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      organizations: {
+        Row: {
+          active: boolean
+          created_at: string
+          created_by: string
+          id: string
+          name: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          created_by: string
+          id?: string
+          name: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          created_by?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string | null
+          email: string | null
+          extension_settings: Json | null
+          id: string
+          membership_tier: string | null
+          name: string | null
+          preferred_language: string | null
+          status: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email?: string | null
+          extension_settings?: Json | null
+          id: string
+          membership_tier?: string | null
+          name?: string | null
+          preferred_language?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string | null
+          extension_settings?: Json | null
+          id?: string
+          membership_tier?: string | null
+          name?: string | null
+          preferred_language?: string | null
+          status?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          org_id: string
+          required_role: Database["public"]["Enums"]["user_role"]
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      user_role: "admin" | "manager" | "team_lead" | "employee" | "consultant"
     }
     CompositeTypes: {
       [_ in never]: never
