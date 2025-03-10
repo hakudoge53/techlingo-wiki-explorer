@@ -16,3 +16,7 @@ export const categories = [
   "Backend",
   "Architecture",
 ];
+
+export const getCategories = (): string[] => {
+  return categories;
+};

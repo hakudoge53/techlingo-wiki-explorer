@@ -13,6 +13,10 @@ export const filterTerms = (terms: TechTerm[], query: string): TechTerm[] => {
   );
 };
 
+export const searchTerms = (terms: TechTerm[], query: string): TechTerm[] => {
+  return filterTerms(terms, query);
+};
+
 export const filterByCategory = (terms: TechTerm[], category: string): TechTerm[] => {
   if (!category || category === "All") return terms;
   return terms.filter(term => term.category === category);
