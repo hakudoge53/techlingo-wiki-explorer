@@ -1,14 +1,14 @@
 
 {
   "manifest_version": 3,
-  "name": "TechLingo Wiki",
-  "version": "1.0.0",
-  "description": "A glossary of technical terms and definitions for developers",
-  "icons": {
-    "16": "icons/icon16.png",
-    "48": "icons/icon48.png",
-    "128": "icons/icon128.png"
-  },
+  "name": "Tech Glossary",
+  "version": "1.0",
+  "description": "A glossary of technical terms for recruiters",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting"
+  ],
   "action": {
     "default_popup": "index.html",
     "default_icon": {
@@ -17,22 +17,15 @@
       "128": "icons/icon128.png"
     }
   },
-  "permissions": ["storage", "activeTab", "scripting"],
-  "host_permissions": ["<all_urls>"],
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content.js"],
-      "run_at": "document_idle"
+      "js": ["content.js"]
     }
   ],
-  "web_accessible_resources": [
-    {
-      "resources": ["content/*"],
-      "matches": ["<all_urls>"]
-    }
-  ],
-  "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'"
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
   }
 }
