@@ -1,9 +1,10 @@
 
 // This file serves as the entry point for the content script
-// It loads the necessary modules in the correct order using script tags
 
 (function() {
-  // Load dependencies in sequence
+  console.log('TechLingo Wiki: Content script loaded');
+  
+  // Function to load dependencies in sequence
   function loadScript(src, callback) {
     const script = document.createElement('script');
     script.src = chrome.runtime.getURL(src);
@@ -11,7 +12,7 @@
     (document.head || document.documentElement).appendChild(script);
   }
 
-  // Load scripts in the right order to ensure dependencies are available
+  // Load scripts in the right order
   loadScript('content/highlight.js', function() {
     loadScript('content/terms.js', function() {
       loadScript('content/observer.js', function() {
