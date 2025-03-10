@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { categories, techTerms, filterTerms, filterByCategory, type TechTerm } from '@/utils/data';
 import TermCard from './TermCard';
 import Search from './Search';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface TermListProps {
   searchQuery?: string;
@@ -40,17 +41,17 @@ const TermList = ({ searchQuery: externalSearchQuery, onSelectTerm }: TermListPr
   };
 
   return (
-    <section id="explore" className="py-8 px-2 md:px-4">
+    <section id="explore" className="py-4 px-2 md:px-4">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-8">
-          <span className="inline-block py-1 px-3 mb-4 text-xs font-medium rounded-full bg-secondary text-muted-foreground">
+        <div className="text-center mb-6">
+          <span className="inline-block py-1 px-3 mb-2 text-xs font-medium rounded-full bg-secondary text-muted-foreground">
             TECH GLOSSARY
           </span>
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">
-            Explore Technology Terms
+          <h2 className="text-xl font-bold mb-2">
+            Technology Terms
           </h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
-            Search our comprehensive database of technology terminology, or browse by category to expand your tech vocabulary.
+          <p className="text-muted-foreground text-sm max-w-2xl mx-auto">
+            Search our database of {techTerms.length} technology terms
           </p>
         </div>
         
@@ -59,39 +60,44 @@ const TermList = ({ searchQuery: externalSearchQuery, onSelectTerm }: TermListPr
           <Search onSearch={setInternalSearchQuery} />
         )}
         
-        <div className="mt-6" id="categories">
-          <div className="flex flex-wrap justify-center gap-2 mb-8">
-            <CategoryButton 
-              category="All" 
-              isSelected={selectedCategory === 'All'} 
-              onClick={() => setSelectedCategory('All')} 
-            />
-            
-            {categories.map(category => (
+        <div className="mt-4" id="categories">
+          <ScrollArea className="whitespace-nowrap pb-2" orientation="horizontal">
+            <div className="flex space-x-2 px-1">
               <CategoryButton 
-                key={category}
-                category={category} 
-                isSelected={selectedCategory === category} 
-                onClick={() => setSelectedCategory(category)} 
+                category="All" 
+                isSelected={selectedCategory === 'All'} 
+                onClick={() => setSelectedCategory('All')} 
               />
-            ))}
-          </div>
-          
-          {filteredTerms.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredTerms.map((term, index) => (
-                <TermCard 
-                  key={term.id} 
-                  term={term} 
-                  index={index}
-                  onClick={() => handleTermSelect(term.id)} 
+              
+              {categories.map(category => (
+                <CategoryButton 
+                  key={category}
+                  category={category} 
+                  isSelected={selectedCategory === category} 
+                  onClick={() => setSelectedCategory(category)} 
                 />
               ))}
             </div>
+          </ScrollArea>
+          
+          {filteredTerms.length > 0 ? (
+            <ScrollArea className="h-[400px] mt-4 pr-4">
+              <div className="space-y-1">
+                {filteredTerms.map((term, index) => (
+                  <TermCard 
+                    key={term.id} 
+                    term={term} 
+                    index={index}
+                    onClick={() => handleTermSelect(term.id)}
+                    compact={true}
+                  />
+                ))}
+              </div>
+            </ScrollArea>
           ) : (
             <div className="text-center py-8">
-              <h3 className="text-xl font-semibold mb-2">No results found</h3>
-              <p className="text-muted-foreground">
+              <h3 className="text-lg font-semibold mb-2">No results found</h3>
+              <p className="text-muted-foreground text-sm">
                 Try adjusting your search or filter to find what you're looking for.
               </p>
             </div>

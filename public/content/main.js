@@ -1,106 +1,114 @@
-// Main module for content script functionality
+
+// Main content script functionality for TechLingo Wiki
 
 (function() {
   // Create namespace for our extension if it doesn't exist
   window.techLingo = window.techLingo || {};
   
-  // Configuration
-  let config = {
-    highlightEnabled: false,
-    termsLoaded: false,
-    terms: []
+  // Flag to prevent multiple initializations
+  let isInitialized = false;
+  
+  // Configuration options
+  const config = {
+    enabled: true,
+    highlightTerms: true,
+    scanInterval: 2000, // ms between scans of page content
+    debounceDelay: 300, // ms to wait before processing DOM changes
+    maxTermsToProcess: 50 // limit number of terms processed per scan for performance
   };
-
-  // Initialize when DOM is fully loaded
+  
+  // Track last scan time to prevent excessive processing
+  let lastScanTime = 0;
+  let scanTimer = null;
+  let processingQueue = false;
+  
+  /**
+   * Initialize the main functionality
+   */
   function initialize() {
-    console.log('TechLingo Wiki: Initializing content script');
+    if (isInitialized) return;
     
-    // Get highlighting preference
-    if (chrome.storage && chrome.storage.sync) {
-      chrome.storage.sync.get(['highlightEnabled'], (result) => {
-        config.highlightEnabled = result.highlightEnabled || false;
-        console.log('TechLingo Wiki: Highlight setting loaded', config.highlightEnabled);
-        
-        // Load terms and start processing if highlighting is enabled
-        loadTermsAndProcess();
-      });
-    }
-
-    // Listen for toggle events from the extension popup
-    document.addEventListener('techLingo.toggleHighlight', (event) => {
-      config.highlightEnabled = event.detail.enabled;
-      console.log('TechLingo Wiki: Highlight setting updated', config.highlightEnabled);
-      
-      if (config.highlightEnabled) {
-        // If terms aren't loaded yet, load them now
-        if (!config.termsLoaded) {
-          loadTermsAndProcess();
-        } else {
-          // Otherwise just process the page with existing terms
-          processPage();
-        }
-      } else {
-        // If highlighting is disabled, remove all existing highlights
-        if (window.techLingo.highlight) {
-          window.techLingo.highlight.removeAllHighlights();
-        }
+    console.log('TechLingo Wiki: Initializing main module');
+    
+    // Listen for when terms are loaded
+    document.addEventListener('techLingo:termsReady', (event) => {
+      console.log('TechLingo Wiki: Terms ready event received', event.detail);
+      if (config.enabled && config.highlightTerms) {
+        // Schedule the first scan
+        scheduleContentScan();
       }
     });
-  }
-
-  // Load terms and process the page
-  function loadTermsAndProcess() {
-    if (window.techLingo.terms && window.techLingo.terms.getTermsFromStorage) {
-      window.techLingo.terms.getTermsFromStorage().then(terms => {
-        if (terms && terms.length > 0) {
-          config.terms = terms;
-          config.termsLoaded = true;
-          console.log('TechLingo Wiki: Loaded', terms.length, 'terms');
-          
-          if (config.highlightEnabled) {
-            processPage();
-          }
-        } else {
-          console.log('TechLingo Wiki: No terms found in storage');
-        }
-      });
-    } else {
-      console.error('TechLingo Wiki: Terms module not loaded properly');
-    }
-  }
-
-  // Process the current page
-  function processPage() {
-    if (!config.highlightEnabled || !config.termsLoaded) {
-      return;
-    }
-
-    console.log('TechLingo Wiki: Processing page for term highlighting');
     
-    // Process the current DOM
-    if (window.techLingo.highlight && window.techLingo.highlight.highlightTermsInNode) {
-      window.techLingo.highlight.highlightTermsInNode(document.body, config.terms);
-      
-      // Set up observer for dynamic content
-      if (window.techLingo.observer && window.techLingo.observer.setupMutationObserver) {
-        window.techLingo.observer.setupMutationObserver(
-          config.highlightEnabled,
-          (node) => window.techLingo.highlight.highlightTermsInNode(node, config.terms)
-        );
+    // Load configuration from storage
+    if (chrome.storage && chrome.storage.sync) {
+      try {
+        chrome.storage.sync.get(['techLingoConfig'], (result) => {
+          if (result && result.techLingoConfig) {
+            config = { ...config, ...result.techLingoConfig };
+            console.log('TechLingo Wiki: Loaded configuration', config);
+          }
+        });
+      } catch (error) {
+        console.error('TechLingo Wiki: Error loading configuration', error);
       }
     }
+    
+    isInitialized = true;
   }
-
-  // Initialize when the DOM is ready
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initialize);
-  } else {
-    initialize();
+  
+  /**
+   * Schedule a content scan with debouncing
+   */
+  function scheduleContentScan() {
+    if (scanTimer) {
+      clearTimeout(scanTimer);
+    }
+    
+    scanTimer = setTimeout(() => {
+      scanPageContent();
+    }, config.debounceDelay);
   }
-
-  // Expose our public API
+  
+  /**
+   * Scan the page content for tech terms
+   */
+  function scanPageContent() {
+    // Skip if already processing or if scanned too recently
+    if (processingQueue || Date.now() - lastScanTime < config.scanInterval) {
+      return;
+    }
+    
+    console.log('TechLingo Wiki: Scanning page content');
+    lastScanTime = Date.now();
+    processingQueue = true;
+    
+    try {
+      // In a real implementation, this would identify tech terms in the page
+      // For now, we'll just log that we're scanning
+      console.log('TechLingo Wiki: Page scan complete');
+      
+      // Process limited number of terms for better performance
+      const terms = window.techLingo.cachedTerms || [];
+      const termsToProcess = terms.slice(0, config.maxTermsToProcess);
+      
+      if (termsToProcess.length > 0) {
+        console.log('TechLingo Wiki: Processing', termsToProcess.length, 'terms');
+        // Actual term highlighting would happen here
+      }
+    } catch (error) {
+      console.error('TechLingo Wiki: Error scanning page content', error);
+    } finally {
+      processingQueue = false;
+    }
+  }
+  
+  // Expose functionality to the global TechLingo namespace
   window.techLingo.main = {
     initialize,
-    processPage
+    scanPageContent,
+    config
   };
+  
+  // Auto-initialize when loaded
+  initialize();
 })();

@@ -1,32 +1,60 @@
+
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { type TechTerm } from '@/utils/data';
 import { ChevronRightIcon } from 'lucide-react';
-import { highlightKeywords } from '@/utils/highlight';
 import { Skeleton } from '@/components/ui/skeleton';
 
 interface TermCardProps {
   term: TechTerm;
   index: number;
   onClick?: () => void;
+  compact?: boolean;
 }
 
-const TermCard = ({ term, index, onClick }: TermCardProps) => {
+const TermCard = ({ term, index, onClick, compact = false }: TermCardProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoaded(true);
-    }, 100 + index * 50);
+    }, 50 + Math.min(index, 10) * 30); // Faster loading with a cap for many terms
     
     return () => clearTimeout(timer);
   }, [index]);
   
   if (!isLoaded) {
-    return <TermCardSkeleton />;
+    return compact ? <CompactTermSkeleton /> : <TermCardSkeleton />;
   }
   
+  if (compact) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: Math.min(index, 20) * 0.02 }} // Faster animations for many items
+        className="w-full"
+      >
+        <button 
+          className="w-full text-left p-2 rounded-md hover:bg-secondary/50 transition-colors"
+          onClick={onClick}
+        >
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="font-medium text-base">{term.term}</span>
+              <span className="ml-2 text-xs text-muted-foreground bg-secondary/50 px-1.5 py-0.5 rounded-full">
+                {term.category}
+              </span>
+            </div>
+            <ChevronRightIcon className="h-4 w-4 text-muted-foreground" />
+          </div>
+        </button>
+      </motion.div>
+    );
+  }
+
+  // Original card view for the cases where we need it
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -55,10 +83,9 @@ const TermCard = ({ term, index, onClick }: TermCardProps) => {
               {term.term}
             </h3>
             
-            <p 
-              className="text-muted-foreground text-sm flex-grow"
-              dangerouslySetInnerHTML={{ __html: highlightKeywords(term.description) }}
-            />
+            <p className="text-muted-foreground text-sm flex-grow">
+              {term.description}
+            </p>
             
             <div 
               className={`mt-4 text-sm font-medium text-primary flex items-center transition-all duration-300 ${isHovered ? 'opacity-100' : 'opacity-70'}`}
@@ -85,6 +112,18 @@ const TermCardSkeleton = () => (
       <div className="mt-auto pt-4">
         <Skeleton className="h-4 w-20" />
       </div>
+    </div>
+  </div>
+);
+
+const CompactTermSkeleton = () => (
+  <div className="w-full p-2">
+    <div className="flex items-center justify-between">
+      <div className="flex items-center">
+        <Skeleton className="h-5 w-20 mr-2" />
+        <Skeleton className="h-4 w-12 rounded-full" />
+      </div>
+      <Skeleton className="h-4 w-4 rounded-full" />
     </div>
   </div>
 );

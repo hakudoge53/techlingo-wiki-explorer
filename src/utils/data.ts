@@ -1,4 +1,3 @@
-
 export interface TechTerm {
   id: string;
   term: string;
@@ -18,6 +17,13 @@ export const categories = [
   "Cybersecurity",
   "Databases",
   "Mobile Development",
+  "Networking",
+  "Operating Systems",
+  "Data Science",
+  "UI/UX",
+  "Frontend",
+  "Backend",
+  "Architecture",
 ];
 
 export const techTerms: TechTerm[] = [
@@ -26,12 +32,8 @@ export const techTerms: TechTerm[] = [
     term: "API",
     category: "Web Development",
     description: "Application Programming Interface - allows different software applications to communicate with each other.",
-    longDescription: "An API (Application Programming Interface) defines the methods and data formats that applications can use to request and exchange information. APIs serve as bridges that enable different software systems to communicate and share functionality, regardless of how they were built or what programming languages they use. They abstract complex underlying code, allowing developers to use predefined functions rather than create them from scratch.",
-    examples: [
-      "RESTful APIs for web services",
-      "JavaScript's fetch API for making HTTP requests",
-      "Operating system APIs that allow applications to interact with hardware"
-    ],
+    longDescription: "An API (Application Programming Interface) defines the methods and data formats that applications can use to request and exchange information. APIs serve as bridges that enable different software systems to communicate and share functionality, regardless of how they were built or what programming languages they use.",
+    examples: ["RESTful APIs", "JavaScript's fetch API", "Operating system APIs"],
     relatedTerms: ["REST", "GraphQL", "Endpoint", "JSON"]
   },
   {
@@ -39,12 +41,8 @@ export const techTerms: TechTerm[] = [
     term: "HTML",
     category: "Web Development",
     description: "HyperText Markup Language - the standard markup language for creating web pages.",
-    longDescription: "HTML (HyperText Markup Language) is the foundation of web content. It uses a system of tags to define elements on a webpage, creating the structure that browsers interpret and display. HTML elements represent content such as headings, paragraphs, images, links, and forms. Modern HTML5 introduced semantic elements like <header>, <footer>, and <article> that better describe their content purpose, improving accessibility and SEO.",
-    examples: [
-      "<h1>This is a heading</h1>",
-      "<p>This is a paragraph.</p>",
-      "<a href=\"https://example.com\">This is a link</a>"
-    ],
+    longDescription: "HTML (HyperText Markup Language) is the foundation of web content. It uses a system of tags to define elements on a webpage, creating the structure that browsers interpret and display.",
+    examples: ["<h1>This is a heading</h1>", "<p>This is a paragraph.</p>"],
     relatedTerms: ["CSS", "DOM", "Semantic HTML", "Web Browser"]
   },
   {
@@ -52,12 +50,8 @@ export const techTerms: TechTerm[] = [
     term: "CSS",
     category: "Web Development",
     description: "Cascading Style Sheets - styles and layouts for HTML documents.",
-    longDescription: "CSS (Cascading Style Sheets) controls the visual presentation of HTML elements. It defines how web pages look in terms of layout, colors, fonts, and responsive design. The 'cascading' nature refers to how styles can inherit and override each other based on specificity. CSS uses selectors to target HTML elements and apply property-value pairs that control their appearance. Modern CSS features like flexbox, grid, and custom properties (variables) have made complex layouts and theming more manageable.",
-    examples: [
-      "body { font-family: Arial; color: #333; }",
-      ".container { display: flex; gap: 1rem; }",
-      "@media (max-width: 768px) { .sidebar { display: none; } }"
-    ],
+    longDescription: "CSS (Cascading Style Sheets) controls the visual presentation of HTML elements. It defines how web pages look in terms of layout, colors, fonts, and responsive design.",
+    examples: ["body { font-family: Arial; color: #333; }", ".container { display: flex; gap: 1rem; }", "@media (max-width: 768px) { .sidebar { display: none; } }"],
     relatedTerms: ["HTML", "Responsive Design", "Flexbox", "CSS Grid"]
   },
   {
@@ -65,12 +59,8 @@ export const techTerms: TechTerm[] = [
     term: "JavaScript",
     category: "Programming",
     description: "A programming language that enables interactive web pages and is an essential part of web applications.",
-    longDescription: "JavaScript is a versatile, high-level programming language that adds interactivity to websites and powers modern web applications. It runs in the browser (client-side) and can also run on servers (via Node.js). JavaScript is an event-driven language with first-class functions, meaning functions can be passed as arguments, returned from other functions, and assigned to variables. Modern JavaScript (ES6+) introduced features like arrow functions, destructuring, promises, and modules that have significantly improved developer experience.",
-    examples: [
-      "document.getElementById('button').addEventListener('click', () => alert('Clicked!'));",
-      "const data = await fetch('https://api.example.com/data').then(res => res.json());",
-      "const sum = (a, b) => a + b;"
-    ],
+    longDescription: "JavaScript is a versatile, high-level programming language that adds interactivity to websites and powers modern web applications.",
+    examples: ["document.getElementById('button').addEventListener('click', () => alert('Clicked!'));", "const data = await fetch('https://api.example.com/data').then(res => res.json());", "const sum = (a, b) => a + b;"],
     relatedTerms: ["DOM", "ES6", "Node.js", "Asynchronous Programming"]
   },
   {
@@ -78,12 +68,8 @@ export const techTerms: TechTerm[] = [
     term: "React",
     category: "Web Development",
     description: "A JavaScript library for building user interfaces, particularly single-page applications.",
-    longDescription: "React is a declarative JavaScript library developed by Facebook for building user interfaces. It uses a component-based architecture where UI elements are encapsulated into reusable components that maintain their own state. React's virtual DOM efficiently updates only the necessary parts of the actual DOM, improving performance. React introduces JSX, a syntax extension that allows writing HTML-like code in JavaScript. The React ecosystem includes tools like React Router for navigation, Redux for state management, and Next.js for server-side rendering.",
-    examples: [
-      "function Welcome() { return <h1>Hello, world!</h1>; }",
-      "const [count, setCount] = useState(0);",
-      "<Button onClick={() => setVisible(!visible)}>Toggle</Button>"
-    ],
+    longDescription: "React is a declarative JavaScript library developed by Facebook for building user interfaces.",
+    examples: ["function Welcome() { return <h1>Hello, world!</h1>; }", "const [count, setCount] = useState(0);", "<Button onClick={() => setVisible(!visible)}>Toggle</Button>"],
     relatedTerms: ["JSX", "Components", "Hooks", "Virtual DOM"]
   },
   {
@@ -91,12 +77,8 @@ export const techTerms: TechTerm[] = [
     term: "Docker",
     category: "DevOps",
     description: "A platform for developing, shipping, and running applications in containers.",
-    longDescription: "Docker is a platform that uses containerization technology to package applications and their dependencies together in isolated environments called containers. Unlike virtual machines, containers share the host system's kernel but have their own filesystem, CPU, memory, and process space, making them lightweight and portable. Docker enables the 'build once, run anywhere' approach, ensuring applications work consistently across different environments. Docker's ecosystem includes Docker Compose for multi-container applications and Docker Swarm for container orchestration.",
-    examples: [
-      "FROM node:14\nWORKDIR /app\nCOPY . .\nRUN npm install\nCMD [\"npm\", \"start\"]",
-      "docker build -t myapp .",
-      "docker run -p 3000:3000 myapp"
-    ],
+    longDescription: "Docker is a platform that uses containerization technology to package applications and their dependencies together in isolated environments called containers.",
+    examples: ["FROM node:14\nWORKDIR /app\nCOPY . .\nRUN npm install\nCMD [\"npm\", \"start\"]", "docker build -t myapp .", "docker run -p 3000:3000 myapp"],
     relatedTerms: ["Container", "Kubernetes", "Microservices", "DevOps"]
   },
   {
@@ -104,12 +86,8 @@ export const techTerms: TechTerm[] = [
     term: "Machine Learning",
     category: "Machine Learning",
     description: "A field of AI that gives computers the ability to learn without being explicitly programmed.",
-    longDescription: "Machine Learning (ML) is a subset of artificial intelligence that enables systems to learn and improve from experience without explicit programming. ML algorithms build mathematical models based on sample data (training data) to make predictions or decisions. Machine learning approaches include supervised learning (using labeled data), unsupervised learning (finding patterns in unlabeled data), and reinforcement learning (learning through trial and error with rewards). Deep learning, a subset of ML using neural networks with multiple layers, has driven recent advances in image recognition, natural language processing, and game playing.",
-    examples: [
-      "Linear regression for predicting housing prices",
-      "Neural networks for image classification",
-      "Reinforcement learning for game AI"
-    ],
+    longDescription: "Machine Learning (ML) is a subset of artificial intelligence that enables systems to learn and improve from experience without explicit programming.",
+    examples: ["Linear regression for predicting housing prices", "Neural networks for image classification", "Reinforcement learning for game AI"],
     relatedTerms: ["Neural Network", "Deep Learning", "Supervised Learning", "Data Science"]
   },
   {
@@ -117,12 +95,8 @@ export const techTerms: TechTerm[] = [
     term: "Cloud Computing",
     category: "Cloud Computing",
     description: "The delivery of computing services over the internet (the cloud).",
-    longDescription: "Cloud computing provides on-demand access to computing resources—servers, storage, databases, networking, software, and more—over the internet without direct active management by users. The main service models are Infrastructure as a Service (IaaS), Platform as a Service (PaaS), and Software as a Service (SaaS). Cloud computing offers benefits like scalability, cost-efficiency (pay-as-you-go), reliability through distributed systems, and accessibility from anywhere. Major cloud providers include AWS, Microsoft Azure, and Google Cloud Platform.",
-    examples: [
-      "Amazon Web Services (AWS) for hosting applications",
-      "Google Drive for file storage",
-      "Microsoft Office 365 for productivity tools"
-    ],
+    longDescription: "Cloud computing provides on-demand access to computing resources—servers, storage, databases, networking, software, and more—over the internet without direct active management by users.",
+    examples: ["Amazon Web Services (AWS) for hosting applications", "Google Drive for file storage", "Microsoft Office 365 for productivity tools"],
     relatedTerms: ["IaaS", "PaaS", "SaaS", "Serverless"]
   },
   {
@@ -130,12 +104,8 @@ export const techTerms: TechTerm[] = [
     term: "SQL",
     category: "Databases",
     description: "Structured Query Language - used to communicate with and manipulate databases.",
-    longDescription: "SQL (Structured Query Language) is a domain-specific language used for managing and querying relational databases. It allows users to define, manipulate, and control data in relational database management systems (RDBMS). SQL operations include selecting data, inserting new records, updating existing records, and deleting records. SQL also provides commands for defining database schemas, creating tables with specific column types, and establishing relationships between tables. Common RDBMS that use SQL include MySQL, PostgreSQL, SQLite, and Microsoft SQL Server.",
-    examples: [
-      "SELECT * FROM users WHERE age > 21;",
-      "INSERT INTO products (name, price) VALUES ('Laptop', 999.99);",
-      "CREATE TABLE customers (id INT PRIMARY KEY, name VARCHAR(100));"
-    ],
+    longDescription: "SQL (Structured Query Language) is a domain-specific language used for managing and querying relational databases.",
+    examples: ["SELECT * FROM users WHERE age > 21;", "INSERT INTO products (name, price) VALUES ('Laptop', 999.99);", "CREATE TABLE customers (id INT PRIMARY KEY, name VARCHAR(100));"],
     relatedTerms: ["Database", "RDBMS", "Normalization", "Indexing"]
   },
   {
@@ -143,12 +113,8 @@ export const techTerms: TechTerm[] = [
     term: "Git",
     category: "DevOps",
     description: "A distributed version control system for tracking changes in source code during software development.",
-    longDescription: "Git is a distributed version control system that tracks changes to files, enabling multiple developers to work on projects simultaneously without conflicts. Unlike centralized version control systems, Git gives each developer a complete copy of the repository with full history, allowing work offline and providing built-in backup. Git's key concepts include commits (snapshots of changes), branches (divergent versions of code), merging (combining branches), and remote repositories (hosted versions of projects). Git has become the industry standard for source code management, with platforms like GitHub, GitLab, and Bitbucket built around it.",
-    examples: [
-      "git commit -m \"Fix navigation bug\"",
-      "git push origin main",
-      "git merge feature/login"
-    ],
+    longDescription: "Git is a distributed version control system that tracks changes to files, enabling multiple developers to work on projects simultaneously without conflicts.",
+    examples: ["git commit -m \"Fix navigation bug\"", "git push origin main", "git merge feature/login"],
     relatedTerms: ["GitHub", "Version Control", "Branch", "Commit"]
   },
   {
@@ -156,12 +122,8 @@ export const techTerms: TechTerm[] = [
     term: "REST",
     category: "Web Development",
     description: "Representational State Transfer - an architectural style for designing networked applications.",
-    longDescription: "REST (Representational State Transfer) is an architectural style for creating web services. RESTful APIs use HTTP requests to perform CRUD (Create, Read, Update, Delete) operations on resources, which are identified by URLs. REST principles include a client-server architecture, statelessness (each request contains all necessary information), cacheability, and a uniform interface. REST APIs typically use standard HTTP methods (GET, POST, PUT, DELETE) and return responses in formats like JSON or XML. This approach has become dominant for web APIs due to its simplicity, scalability, and alignment with web technologies.",
-    examples: [
-      "GET /api/users to retrieve user data",
-      "POST /api/orders to create a new order",
-      "DELETE /api/comments/123 to remove a comment"
-    ],
+    longDescription: "REST (Representational State Transfer) is an architectural style for creating web services.",
+    examples: ["GET /api/users to retrieve user data", "POST /api/orders to create a new order", "DELETE /api/comments/123 to remove a comment"],
     relatedTerms: ["API", "HTTP", "JSON", "Resource"]
   },
   {
@@ -169,17 +131,135 @@ export const techTerms: TechTerm[] = [
     term: "Blockchain",
     category: "Cybersecurity",
     description: "A distributed ledger technology that maintains a continuously growing list of records, called blocks.",
-    longDescription: "Blockchain is a distributed ledger technology where data is stored in blocks that are linked using cryptography, forming an immutable chain. Each block contains transaction data, a timestamp, and a cryptographic hash of the previous block, making the chain resistant to modification. Blockchain operates on a peer-to-peer network where consensus mechanisms validate new blocks without requiring a central authority. While best known for powering cryptocurrencies like Bitcoin, blockchain technology has broader applications in supply chain management, digital identity, voting systems, and smart contracts that automatically execute when conditions are met.",
-    examples: [
-      "Bitcoin cryptocurrency transactions",
-      "Ethereum smart contracts",
-      "Supply chain tracking using blockchain"
-    ],
+    longDescription: "Blockchain is a distributed ledger technology where data is stored in blocks that are linked using cryptography, forming an immutable chain.",
+    examples: ["Bitcoin cryptocurrency transactions", "Ethereum smart contracts", "Supply chain tracking using blockchain"],
     relatedTerms: ["Cryptocurrency", "Smart Contract", "Distributed Ledger", "Consensus Mechanism"]
   },
+  {
+    id: "13",
+    term: "GraphQL",
+    category: "Web Development",
+    description: "A query language for APIs and a runtime for executing those queries with existing data.",
+    longDescription: "GraphQL is a query language and server-side runtime for APIs that prioritizes giving clients exactly the data they request.",
+    examples: ["query { user(id: 4) { name, email } }"],
+    relatedTerms: ["API", "REST", "JSON", "Query"]
+  },
+  {
+    id: "14",
+    term: "Node.js",
+    category: "Backend",
+    description: "A JavaScript runtime built on Chrome's V8 JavaScript engine for building scalable network applications.",
+    longDescription: "Node.js is an open-source, cross-platform JavaScript runtime environment that executes JavaScript code outside a web browser.",
+    examples: ["const http = require('http'); http.createServer((req, res) => res.end('Hello World')).listen(3000);"],
+    relatedTerms: ["JavaScript", "Express", "npm", "Backend"]
+  },
+  {
+    id: "15",
+    term: "TypeScript",
+    category: "Programming",
+    description: "A superset of JavaScript that adds static typing to the language.",
+    longDescription: "TypeScript is a strongly typed programming language that builds on JavaScript, giving you better tooling at any scale.",
+    examples: ["function greet(name: string): string { return `Hello, ${name}!`; }"],
+    relatedTerms: ["JavaScript", "Static Typing", "Interface", "Generics"]
+  },
+  {
+    id: "16",
+    term: "Kubernetes",
+    category: "DevOps",
+    description: "An open-source platform for automating deployment, scaling, and management of containerized applications.",
+    longDescription: "Kubernetes, also known as K8s, is an open-source system for automating deployment, scaling, and management of containerized applications.",
+    examples: ["kubectl create deployment nginx --image=nginx"],
+    relatedTerms: ["Container", "Docker", "Microservices", "Orchestration"]
+  },
+  {
+    id: "17",
+    term: "Redux",
+    category: "Frontend",
+    description: "A predictable state container for JavaScript apps, commonly used with React.",
+    longDescription: "Redux is a predictable state container for JavaScript apps, often used with React.",
+    examples: ["const store = createStore(reducer); store.dispatch(action);"],
+    relatedTerms: ["React", "State Management", "Action", "Reducer"]
+  },
+  {
+    id: "18",
+    term: "PWA",
+    category: "Web Development",
+    description: "Progressive Web App - a type of application software delivered through the web, built using common web technologies.",
+    longDescription: "Progressive Web Apps (PWAs) are web applications that use service workers, manifests, and other web-platform features in combination with progressive enhancement to give users an experience on par with native apps.",
+    examples: ["Service workers for offline capability", "Web app manifest for home screen installation"],
+    relatedTerms: ["Service Worker", "Web App Manifest", "Cache API", "Push Notifications"]
+  },
+  {
+    id: "19",
+    term: "CI/CD",
+    category: "DevOps",
+    description: "Continuous Integration and Continuous Delivery - practices of automating building, testing and deployment of applications.",
+    longDescription: "CI/CD is a method to frequently deliver apps to customers by introducing automation into the stages of app development.",
+    examples: ["GitHub Actions workflow", "Jenkins pipeline", "CircleCI configuration"],
+    relatedTerms: ["DevOps", "Automation", "Testing", "Deployment"]
+  },
+  {
+    id: "20",
+    term: "SSR",
+    category: "Web Development",
+    description: "Server-Side Rendering - rendering a client-side web app on the server and sending a fully rendered page to the client.",
+    longDescription: "Server-side rendering (SSR) is the process of rendering web pages on the server and sending the fully rendered HTML to the client.",
+    examples: ["Next.js", "Nuxt.js", "Remix"],
+    relatedTerms: ["CSR", "SEO", "Hydration", "Universal Rendering"]
+  },
+  {
+    id: "21",
+    term: "WebSockets",
+    category: "Web Development",
+    description: "A communication protocol providing full-duplex communication channels over a single TCP connection.",
+    longDescription: "WebSocket is a computer communications protocol, providing full-duplex communication channels over a single TCP connection.",
+    examples: ["const socket = new WebSocket('ws://example.com/socket');", "socket.onmessage = (event) => console.log(event.data);"],
+    relatedTerms: ["TCP", "Real-time", "Socket.IO", "Push Technology"]
+  },
+  {
+    id: "22",
+    term: "ORM",
+    category: "Databases",
+    description: "Object-Relational Mapping - a technique that allows you to query and manipulate data from a database using an object-oriented paradigm.",
+    longDescription: "ORM (Object-Relational Mapping) is a programming technique for converting data between incompatible type systems using object-oriented programming languages.",
+    examples: ["Sequelize", "Prisma", "TypeORM", "Hibernate"],
+    relatedTerms: ["Database", "SQL", "Entity", "Repository Pattern"]
+  },
+  {
+    id: "23",
+    term: "JWT",
+    category: "Cybersecurity",
+    description: "JSON Web Token - an open standard for securely transmitting information between parties as a JSON object.",
+    longDescription: "JSON Web Token (JWT) is an open standard (RFC 7519) that defines a compact and self-contained way for securely transmitting information between parties as a JSON object.",
+    examples: ["eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0"],
+    relatedTerms: ["Authentication", "OAuth", "Token", "Payload"]
+  },
+  {
+    id: "24",
+    term: "Agile",
+    category: "Programming",
+    description: "An iterative approach to project management and software development that helps teams deliver value faster.",
+    longDescription: "Agile is a time-boxed, iterative approach to software delivery that builds software incrementally from the start of the project, instead of trying to deliver the entire product at once near the end.",
+    relatedTerms: ["Scrum", "Kanban", "Sprint", "User Story"]
+  },
+  {
+    id: "25",
+    term: "Assembly",
+    category: "Programming",
+    description: "Low-level programming language with a strong correspondence between the language and architecture's machine code instructions.",
+    longDescription: "Assembly language is a low-level programming language in which there is a strong correspondence between the language's instructions and the architecture's machine code instructions.",
+    relatedTerms: ["Machine Code", "Compiler", "CPU", "Low-level Programming"]
+  },
+  {
+    id: "200",
+    term: "Zero-day",
+    category: "Cybersecurity",
+    description: "A software vulnerability that is unknown to those who should be interested in mitigating it.",
+    longDescription: "A zero-day (or 0-day) vulnerability is a computer-software vulnerability that is unknown to those who should be interested in mitigating the vulnerability (including the vendor of the target software).",
+    relatedTerms: ["Vulnerability", "Exploit", "Patch", "Security"]
+  }
 ];
 
-// Filter tech terms by search query
 export const filterTerms = (terms: TechTerm[], query: string): TechTerm[] => {
   const lowercaseQuery = query.toLowerCase().trim();
   if (!lowercaseQuery) return terms;
@@ -191,18 +271,15 @@ export const filterTerms = (terms: TechTerm[], query: string): TechTerm[] => {
   );
 };
 
-// Filter tech terms by category
 export const filterByCategory = (terms: TechTerm[], category: string): TechTerm[] => {
   if (!category || category === "All") return terms;
   return terms.filter(term => term.category === category);
 };
 
-// Get tech term by ID
 export const getTermById = (id: string): TechTerm | undefined => {
   return techTerms.find(term => term.id === id);
 };
 
-// Get related terms
 export const getRelatedTerms = (term: TechTerm): TechTerm[] => {
   if (!term.relatedTerms || term.relatedTerms.length === 0) return [];
   
@@ -210,3 +287,27 @@ export const getRelatedTerms = (term: TechTerm): TechTerm[] => {
     term.relatedTerms?.includes(t.term) && t.id !== term.id
   ).slice(0, 3);
 };
+
+export const syncTermsToStorage = (): void => {
+  if (typeof chrome !== 'undefined' && chrome.storage && chrome.storage.local) {
+    try {
+      const termsForContentScript = techTerms.map(term => ({
+        term: term.term,
+        description: term.description,
+        category: term.category
+      }));
+      
+      chrome.storage.local.set({ techTerms: termsForContentScript }, () => {
+        console.log('Tech terms synced to storage for content script', termsForContentScript.length);
+      });
+    } catch (error) {
+      console.error('Error syncing terms to storage:', error);
+    }
+  } else {
+    console.log('Chrome API not available - running in development mode');
+  }
+};
+
+if (typeof chrome !== 'undefined' && chrome.storage) {
+  syncTermsToStorage();
+}
