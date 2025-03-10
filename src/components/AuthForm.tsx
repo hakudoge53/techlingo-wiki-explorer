@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ExternalLink } from 'lucide-react';
 
 const AuthForm = () => {
   const [email, setEmail] = useState('');
@@ -98,8 +98,20 @@ const AuthForm = () => {
             <TabsTrigger value="signin">Sign In</TabsTrigger>
             <TabsTrigger value="signup">Sign Up</TabsTrigger>
           </TabsList>
-          <CardDescription className="pt-4">
-            Access TechLingo Wiki with your Supabase account
+          <CardDescription className="pt-4 space-y-2">
+            <p>Access TechLingo Wiki with your Techlex account</p>
+            <p className="text-xs">
+              Don't have an account?{" "}
+              <a 
+                href="https://techlingo.ai" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-primary hover:underline inline-flex items-center"
+              >
+                Get your Techlex account
+                <ExternalLink className="h-3 w-3 ml-1" />
+              </a>
+            </p>
           </CardDescription>
         </CardHeader>
         
