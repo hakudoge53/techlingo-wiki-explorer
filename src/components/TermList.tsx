@@ -61,7 +61,7 @@ const TermList = ({ searchQuery: externalSearchQuery, onSelectTerm }: TermListPr
         )}
         
         <div className="mt-4" id="categories">
-          <div className="overflow-x-auto pb-2">
+          <div className="whitespace-nowrap pb-2 overflow-x-auto">
             <div className="flex space-x-2 px-1">
               <CategoryButton 
                 category="All" 
