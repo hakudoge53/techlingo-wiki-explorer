@@ -28,7 +28,8 @@
 				"dbaeumer.vscode-eslint",
 				"bradlc.vscode-tailwindcss",
 				"esbenp.prettier-vscode",
-				"ms-vscode.vscode-typescript-next"
+				"ms-vscode.vscode-typescript-next",
+				"gitpod.gitpod-remote-ssh"
 			]
 		}
 	},
